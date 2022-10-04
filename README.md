@@ -16,10 +16,7 @@ Playing piano in the air based on STM32 and Yolov4.
 
 
 ## Train
-1. Download VOC2007 dataset from following website and unzip them:
-
-    * http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtrainval_06-Nov-2007.tar
-    * http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtest_06-Nov-2007.tarnload.py
+1. Download VOC2007 dataset from [google drive](https://drive.google.com/file/d/1UBs1qPfBD8Tt8JZlkihc4TLo-wFXPNDO/view?usp=sharing) or [kaggle](https://www.kaggle.com/datasets/zhiyiyo/hand-gesture-dataset) and unzip them.
 
 2. Download pre-trained `CSPDarknet53.pth` model from [Google Drive](https://drive.google.com/file/d/12oV8QL937S1JWFQhzLNPoqyYc_bi0lWT/view?usp=sharing).
 
