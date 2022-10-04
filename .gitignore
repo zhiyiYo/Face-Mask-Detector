@@ -1,0 +1,37 @@
+# 忽略.vscode文件夹
+.vscode/
+.VSCodeCounter
+
+# 忽略工作区文件
+*.code-workspace
+
+# 忽略python缓存文件
+*/__pycache__
+*.py[cod]
+
+# 忽略日志文件
+log/
+*.log
+
+# 忽略测试文件
+test.py
+test.ipynb
+
+# 忽略备份文件夹
+backup/
+
+# 忽略模型文件
+model/
+
+# 忽略数据集
+*.tar
+algorithm/data/images/
+algorithm/data/labels/
+
+# 忽略评估结果
+eval/
+
+# 忽略输出文件
+*.o
+*.hex
+*.elf

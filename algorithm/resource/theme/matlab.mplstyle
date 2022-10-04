@@ -1,0 +1,92 @@
+
+## ***************************************************************************
+## * AXES                                                                    *
+## ***************************************************************************
+axes.grid :       True
+axes.axisbelow :  True
+axes.facecolor :  white
+axes.prop_cycle : cycler('color', ['0072BD', 'D95319', 'EDB120', '7E2F8E', '77AC30', '4DBEEE', 'A2142F','7F7F7F', 'BCBD22', '17BECF'])
+
+
+
+## ***************************************************************************
+## * FIGURE                                                                  *
+## ***************************************************************************
+figure.dpi :        140
+figure.figsize :    8, 6
+figure.facecolor :  white
+
+
+
+
+## ***************************************************************************
+## * TICKS                                                                   *
+## ***************************************************************************
+xtick.direction :       in
+xtick.major.size :      4
+xtick.major.width :     0.5
+xtick.minor.size :      1.5
+xtick.minor.width :     0.5
+# xtick.minor.visible :   True
+xtick.top : True
+
+ytick.direction :       in
+ytick.major.size :      4
+ytick.major.width :     0.5
+ytick.minor.size :      1.5
+ytick.minor.width :     0.5
+# ytick.minor.visible :   True
+ytick.right :           True
+
+
+
+## ***************************************************************************
+## * LINES                                                                   *
+## ***************************************************************************
+axes.linewidth :  0.5
+lines.linewidth : 1
+
+
+
+## ***************************************************************************
+## * SAVING FIGURES                                                          *
+## ***************************************************************************
+savefig.bbox :       tight
+savefig.pad_inches : 0.05
+savefig.dpi :        300
+
+
+
+## ***************************************************************************
+## * FONT                                                                    *
+## ***************************************************************************
+font.size :        11
+font.family :      serif
+font.serif :       Latin Modern Roman, STSong
+font.sans-serif :  Arial, Helvetica, YaHei
+mathtext.default:  it
+mathtext.fallback: cm
+mathtext.fontset : cm
+
+
+
+## ***************************************************************************
+## * GRIDS                                                                   *
+## ***************************************************************************
+grid.color :     0.8
+grid.alpha :     0.64
+grid.linewidth : 0.5
+grid.linestyle : -
+
+
+
+## ***************************************************************************
+## * LEGEND                                                                  *
+## ***************************************************************************
+legend.loc:         best
+legend.shadow :     False
+legend.frameon :    True
+legend.fancybox :   False
+legend.numpoints :  1
+legend.edgecolor:   0
+legend.framealpha : 1
