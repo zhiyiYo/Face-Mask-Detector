@@ -18,8 +18,7 @@ class DatasetBase(Dataset):
     """ 数据集基类 """
 
     classes = [
-        'zero', 'one', 'two', 'three',
-        'four', 'five', 'win'
+        'face', 'face_mask'
     ]
 
     def __init__(self, root: Union[str, List[str]], transformer: Transformer = None,

@@ -4,10 +4,10 @@ import unittest
 import torch
 import numpy as np
 
-from algorithm.net.dataset import VOCDataset
-from algorithm.utils.augmentation_utils import (BBoxToAbsoluteCoords, Compose,
+from net.dataset import VOCDataset
+from utils.augmentation_utils import (BBoxToAbsoluteCoords, Compose,
                                       YoloAugmentation, ColorAugmentation)
-from algorithm.utils.box_utils import draw, corner_to_center_numpy
+from utils.box_utils import draw, corner_to_center_numpy
 
 
 class TestAugmention(unittest.TestCase):

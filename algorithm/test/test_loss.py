@@ -3,8 +3,8 @@ import unittest
 import numpy as np
 import torch
 
-from algorithm.net.loss import YoloLoss
-from algorithm.net.yolo import Yolo
+from net.loss import YoloLoss
+from net.yolo import Yolo
 
 
 class TestLoss(unittest.TestCase):

@@ -1,5 +1,5 @@
 # Air-Piano
-Playing piano in the air based on STM32 and Yolov4.
+A face mask detector based on STM32 and Yolov4.
 
 
 ## Quick start
@@ -16,7 +16,7 @@ Playing piano in the air based on STM32 and Yolov4.
 
 
 ## Train
-1. Download VOC2007 dataset from [google drive](https://drive.google.com/file/d/1uAceBNcZ5WH5rb3fZ05HFobeigWowX3y/view?usp=sharing) or [kaggle](https://www.kaggle.com/datasets/zhiyiyo/hand-gesture-dataset) and unzip them.
+1. Download VOC2007 dataset from [google drive](https://drive.google.com/file/d/1QspxOJMDf_rAWVV7AU_Nc0rjo1_EPEDW/view) and unzip them.
 
 2. Download pre-trained `CSPDarknet53.pth` model from [Google Drive](https://drive.google.com/file/d/12oV8QL937S1JWFQhzLNPoqyYc_bi0lWT/view?usp=sharing).
 

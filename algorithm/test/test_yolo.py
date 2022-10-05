@@ -2,7 +2,7 @@
 import unittest
 
 import torch
-from algorithm.net import Yolo
+from net import Yolo
 
 
 class TestYolo(unittest.TestCase):

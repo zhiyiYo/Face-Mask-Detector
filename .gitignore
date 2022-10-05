@@ -25,8 +25,8 @@ model/
 
 # 忽略数据集
 *.tar
-algorithm/data/images/
-algorithm/data/labels/
+algorithm/data/FaceMaskDataset/
+*.zip
 
 # 忽略评估结果
 eval/

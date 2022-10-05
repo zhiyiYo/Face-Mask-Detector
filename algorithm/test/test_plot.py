@@ -4,7 +4,7 @@ from unittest import TestCase
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-from algorithm.utils.plot_utils import *
+from utils.plot_utils import *
 
 mpl.rc_file('resource/theme/matlab.mplstyle')
 
