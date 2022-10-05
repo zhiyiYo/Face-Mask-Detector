@@ -5,14 +5,14 @@ from pathlib import Path
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-from net import EvalPipeline, YoloDataset
+from net import EvalPipeline, VOCDataset
 
 mpl.rc_file('resource/theme/matlab.mplstyle')
 
 
 # load dataset
-root = 'data/VOCtest_06-Nov-2007/VOCdevkit/VOC2007'
-dataset = YoloDataset(root, 'test')
+root = 'data/FaceMaskDataset/val'
+dataset = VOCDataset(root, 'all')
 
 # list all models
 model_dir = Path('model/2021-11-29_14-30-54')

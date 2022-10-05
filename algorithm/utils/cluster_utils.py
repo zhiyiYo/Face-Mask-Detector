@@ -1,61 +1,45 @@
 # coding:utf-8
-from pathlib import Path
+import glob
 from xml.etree import ElementTree as ET
+from random import choice
 
 import numpy as np
 
-
-def iou(box: np.ndarray, boxes: np.ndarray):
-    """ 计算一个边界框和其他边界框的交并比
-    Parameters
-    ----------
-    box: `~np.ndarray` of shape `(4, )`
-        边界框
-    boxes: `~np.ndarray` of shape `(n, 4)`
-        其他边界框
-
-    Returns
-    -------
-    iou: `~np.ndarray` of shape `(n, )`
-        交并比
-    """
-    # 计算交集
-    xy_max = np.minimum(boxes[:, 2:], box[2:])
-    xy_min = np.maximum(boxes[:, :2], box[:2])
-    inter = np.clip(xy_max-xy_min, a_min=0, a_max=np.inf)
-    inter = inter[:, 0]*inter[:, 1]
-
-    # 计算并集
-    area_boxes = (boxes[:, 2]-boxes[:, 0])*(boxes[:, 3]-boxes[:, 1])
-    area_box = (box[2]-box[0])*(box[3]-box[1])
-
-    # 计算 iou
-    iou = inter/(area_box+area_boxes-inter)  # type: np.ndarray
-    return iou
+from utils.box_utils import jaccard_overlap_numpy as iou
 
 
 class AnchorKmeans:
     """ 先验框聚类 """
 
     def __init__(self, annotation_dir: str):
-        self.annotation_dir = Path(annotation_dir)
-        if not self.annotation_dir.exists():
-            raise ValueError(f'标签文件夹 `{annotation_dir}` 不存在')
-
+        self.annotation_dir = annotation_dir
         self.bbox = self.get_bbox()
 
     def get_bbox(self) -> np.ndarray:
         """ 获取所有的边界框 """
         bbox = []
 
-        for path in self.annotation_dir.glob('*.txt'):
-            lines = path.read_text("utf-8").split("\n")
-            for line in lines:
-                if not line.strip():
-                    continue
+        for path in glob.glob(f'{self.annotation_dir}/*xml'):
+            root = ET.parse(path).getroot()
 
-                c, cx, cy, w, h = line.strip().split()
-                bbox.append([0, 0, float(w), float(h)])
+            # 图像的宽度和高度
+            w = int(root.find('size/width').text)
+            h = int(root.find('size/height').text)
+
+            if w==0:
+                print(path)
+
+            # 获取所有边界框
+            for obj in root.iter('object'):
+                box = obj.find('bndbox')
+
+                # 归一化坐标
+                xmin = int(box.find('xmin').text)/w
+                ymin = int(box.find('ymin').text)/h
+                xmax = int(box.find('xmax').text)/w
+                ymax = int(box.find('ymax').text)/h
+
+                bbox.append([0, 0, xmax-xmin, ymax-ymin])
 
         return np.array(bbox)
 
@@ -150,11 +134,10 @@ class AnchorKmeans:
 
 
 if __name__ == '__main__':
-    # 标签文件夹
-    root = 'data/labels'
+    root = 'data/FaceMaskDataset/train/Annotations'
     model = AnchorKmeans(root)
     clusters = model.get_cluster(9)
-    clusters = np.array(sorted(clusters.tolist(), key=lambda i: i[0]*i[1]))
+    clusters = np.array(sorted(clusters.tolist(), key=lambda i: i[0]*i[1], reverse=True))
 
     # 将先验框还原为原本的大小
     print('聚类结果:\n', (clusters*416).astype(int))

@@ -1,12 +1,13 @@
 # coding: utf-8
-from typing import Dict
+from pathlib import Path
+from typing import Dict, Union
 from xml.etree import ElementTree as ET
 
 
 class AnnotationReaderBase:
     """ 标签读取器基类 """
 
-    def read(self, file_path: str):
+    def read(self, file_path: Union[str, Path]):
         """ 解析标签文件
 
         Parameters
@@ -71,7 +72,9 @@ class VocAnnotationReader(AnnotationReaderBase):
                 p = [int(bbox.find(pt).text) for pt in points]
                 raise ValueError(f"{file_path} 存在脏数据：object={name}, bbox={p}")
 
-            data.append(self.class_to_index[name])
+            if name not in self.class_to_index.keys():
+                print(file_path)
+            #data.append(self.class_to_index[name])
             target.append(data)
 
         return target

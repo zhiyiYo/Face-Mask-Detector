@@ -41,9 +41,9 @@ class TrainPipeline:
     """ 训练模型流水线 """
 
     def __init__(self, n_classes: int, image_size: int, anchors: list, dataset: VOCDataset, darknet_path: str = None,
-                 yolo_path: str = None, lr=0.01, momentum=0.9, weight_decay=4e-5, warm_up_ratio=0.02, freeze=True,
-                 batch_size=4, freeze_batch_size=8, num_workers=4, freeze_epoch=20, start_epoch=0, max_epoch=60,
-                 save_frequency=5, use_gpu=True, save_dir='model', log_file: str = None, log_dir='log'):
+                 yolo_path: str = None, lr=0.01, momentum=0.9, weight_decay=4e-5, warm_up_ratio=0.02, no_aug_ratio=0.05,
+                 freeze=True, batch_size=4, freeze_batch_size=8, num_workers=4, freeze_epoch=20, start_epoch=0,
+                 max_epoch=60, save_frequency=5, use_gpu=True, save_dir='model', log_file: str = None, log_dir='log'):
         """
         Parameters
         ----------
@@ -78,6 +78,9 @@ class TrainPipeline:
 
         warm_up_ratio: float
             暖启动的世代占全部世代的比例
+
+        no_aug_ratio: float
+            关闭马赛克数据增强的世代比例
 
         freeze: bool
             是否使用冻结训练
@@ -155,7 +158,7 @@ class TrainPipeline:
         self.optimizer = make_optimizer(
             self.model, lr_fit, momentum, weight_decay)
         self.lr_schedule = WarmUpCosLRSchedule(
-            self.optimizer, lr_fit, lr_min_fit, max_epoch, warm_up_ratio)
+            self.optimizer, lr_fit, lr_min_fit, max_epoch, warm_up_ratio, no_aug_ratio)
 
         # 数据集加载器
         self.num_worksers = num_workers
@@ -207,8 +210,10 @@ class TrainPipeline:
             self.model.train()
 
             # 创建进度条
-            self.pbar = tqdm(total=self.n_batches, bar_format=bar_format)
-            self.pbar.set_description(f"\33[36m💫 Epoch {(e+1):5d}/{self.max_epoch}")
+            self.pbar = tqdm(total=self.n_batches,
+                             bar_format=bar_format, ascii=True)
+            self.pbar.set_description(
+                f"\33[36m💫 Epoch {(e+1):5d}/{self.max_epoch}")
             start_time = datetime.now()
 
             loss_value = 0

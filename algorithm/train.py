@@ -1,16 +1,16 @@
 # coding:utf-8
-from net import TrainPipeline, YoloDataset
+from net import TrainPipeline, VOCDataset
 from utils.augmentation_utils import YoloAugmentation, ColorAugmentation
 
 
 # train config
 config = {
-    "n_classes": len(YoloDataset.classes),
+    "n_classes": len(VOCDataset.classes),
     "image_size": 416,
     "anchors": [
-        [[216, 332], [342, 234], [330, 347]],
-        [[249, 105], [128, 279], [300, 145]],
-        [[58,  58], [179, 87], [90, 192]],
+        [[100, 146], [147, 203], [208, 260]],
+        [[26, 43], [44, 65], [65, 105]],
+        [[4, 8], [8, 15], [15, 27]]
     ],
     "darknet_path": "model/CSPdarknet53.pth",
     "lr": 1e-2,
@@ -25,7 +25,7 @@ config = {
 
 # load dataset
 root = 'data'
-dataset = YoloDataset(
+dataset = VOCDataset(
     root,
     'trainval',
     transformer=YoloAugmentation(config['image_size']),
