@@ -1,7 +1,6 @@
 # coding:utf-8
 import glob
 from xml.etree import ElementTree as ET
-from random import choice
 
 import numpy as np
 
@@ -25,9 +24,6 @@ class AnchorKmeans:
             # 图像的宽度和高度
             w = int(root.find('size/width').text)
             h = int(root.find('size/height').text)
-
-            if w==0:
-                print(path)
 
             # 获取所有边界框
             for obj in root.iter('object'):

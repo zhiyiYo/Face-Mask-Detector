@@ -2,9 +2,14 @@
 from net import EvalPipeline, VOCDataset
 
 # load dataset
-root = 'data/VOCtest_06-Nov-2007/VOCdevkit/VOC2007'
-dataset = VOCDataset(root, 'test')
+root = 'data/FaceMaskDataset/val'
+dataset = VOCDataset(root, 'all')
 
-model_path = 'model/2022-10-02_16-52-03/Yolo_50.pth'
-eval_pipeline = EvalPipeline(model_path, dataset, conf_thresh=0.001)
+anchors = [
+    [[100, 146], [147, 203], [208, 260]],
+    [[26, 43], [44, 65], [65, 105]],
+    [[4, 8], [8, 15], [15, 27]]
+]
+model_path = 'model/Yolo_140.pth'
+eval_pipeline = EvalPipeline(model_path, dataset, anchors=anchors, conf_thresh=0.001)
 eval_pipeline.eval()

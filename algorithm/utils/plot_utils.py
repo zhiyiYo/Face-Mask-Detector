@@ -61,3 +61,14 @@ def plot_AP(file_path: str):
     ax.set(xlabel='AP')
 
     return fig, ax
+
+
+def plot_mAP(file_path: str):
+    """ 绘制 mAP 曲线 """
+    with open(file_path, encoding='utf-8') as f:
+        mAP = json.load(f)
+
+    fig, ax = plt.subplots(1, 1, num="mAP 曲线")
+    ax.plot(range(1, len(mAP)*10+1, 10), mAP)
+    ax.set(xlabel="epoch", ylabel="mAP", title="mAP Curve")
+    return fig, ax
