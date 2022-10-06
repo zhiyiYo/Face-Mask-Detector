@@ -69,6 +69,6 @@ def plot_mAP(file_path: str):
         mAP = json.load(f)
 
     fig, ax = plt.subplots(1, 1, num="mAP 曲线")
-    ax.plot(range(1, len(mAP)*10+1, 10), mAP)
+    ax.plot(range(10, len(mAP)*10+1, 10), mAP)
     ax.set(xlabel="epoch", ylabel="mAP", title="mAP Curve")
     return fig, ax
