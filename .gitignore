@@ -35,3 +35,4 @@ eval/
 *.o
 *.hex
 *.elf
+stm32/build/
