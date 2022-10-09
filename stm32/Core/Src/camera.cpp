@@ -271,6 +271,7 @@ void Camera::refresh()
             setReadClock(GPIO_PIN_SET);
 
             lcd_->drawPoint(color);
+            printf("%d\n", color);
         }
     }
 

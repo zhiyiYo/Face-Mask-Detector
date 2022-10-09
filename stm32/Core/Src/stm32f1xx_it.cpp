@@ -58,6 +58,7 @@ uint8_t numBufferImages = 0;
 
 /* External variables --------------------------------------------------------*/
 extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart2;
 extern CameraTypeDef cameraTypeDef;
 /* USER CODE BEGIN EV */
 
@@ -208,10 +209,23 @@ void EXTI9_5_IRQHandler(void)
     /* USER CODE BEGIN EXTI9_5_IRQn 0 */
     if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_8))
     {
-        cameraTypeDef.WRST = 0;  //复位写指针
-        cameraTypeDef.WRST = 1;
-        cameraTypeDef.WREN = 1;  //允许写入FIFO
-        numBufferImages++;
+        if (numBufferImages < 2)
+        {
+            if (numBufferImages == 0)
+            {
+                cameraTypeDef.WREN = 1;  //允许写入FIFO
+                cameraTypeDef.WRST = 0;  //复位写指针
+                cameraTypeDef.WRST = 1;
+            }
+            else
+            {
+                cameraTypeDef.WREN = 0;  // 禁止写入FIFO
+                cameraTypeDef.WRST = 0;
+                cameraTypeDef.WRST = 1;
+            }
+
+            numBufferImages++;
+        }
     }
     /* USER CODE END EXTI9_5_IRQn 0 */
 
@@ -234,6 +248,20 @@ void USART1_IRQHandler(void)
     /* USER CODE BEGIN USART1_IRQn 1 */
 
     /* USER CODE END USART1_IRQn 1 */
+}
+
+/**
+ * @brief This function handles USART2 global interrupt.
+ */
+void USART2_IRQHandler(void)
+{
+    /* USER CODE BEGIN USART2_IRQn 0 */
+
+    /* USER CODE END USART2_IRQn 0 */
+    HAL_UART_IRQHandler(&huart2);
+    /* USER CODE BEGIN USART2_IRQn 1 */
+
+    /* USER CODE END USART2_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

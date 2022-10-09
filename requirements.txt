@@ -6,3 +6,7 @@ cmapy==0.6.6
 imgaug==0.4.0
 tqdm==4.61.2
 prettytable
+pywin32==227
+pywin32-ctypes==0.2.0
+PyQt5==5.15.6
+PyQt5-sip==12.10.1

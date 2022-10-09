@@ -1,0 +1,66 @@
+/*设置菜单样式*/
+QMenu {
+    background-color: rgb(232, 232, 232);
+    font-size: 18px;
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
+    padding: 5px 0px 16px 0px;
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 5px;
+}
+
+QMenu::right-arrow {
+    width: 16px;
+    height: 16px;
+    right: 16px;
+    border-image: url(:/images/menu/ChevronRight.png);
+}
+
+QMenu::separator {
+    height: 1px;
+    background: rgba(0, 0, 0, 104);
+    margin-right: 13px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 13;
+}
+
+QMenu::item {
+    padding: 7px 20px 7px 13px;
+}
+
+QMenu::item:selected {
+    border-width: 1px;
+    border-color: rgb(212, 212, 212);
+    background: rgba(0, 0, 0, 25);
+    color: black;
+}
+
+
+
+/*亚克力菜单样式*/
+QMenu#acrylicMenu {
+    padding: 11px 19px 11px 19px;
+    background: transparent;
+    border: 0px;
+}
+
+QMenu#acrylicMenu::item {
+    width: 243px;
+    padding: 5px 0px 5px 25px;
+    background-color: transparent;
+    border-radius: 5px;
+    margin-right: 17px;
+    margin-bottom: 15px;
+}
+
+QMenu#acrylicMenu::item:selected {
+    background-color: rgba(0, 0, 0, 10);
+}
+
+QMenu#acrylicMenu::item:pressed {
+    background-color: rgba(0, 0, 0, 6);
+}
+
+QMenu#acrylicMenu::icon {
+    padding: 0px 0px 0px 27px;
+}

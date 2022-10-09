@@ -1,0 +1,37 @@
+<RCC>
+    <qresource prefix="/">
+        <file>i18n/Face-Mask-Detector_zh.qm</file>
+
+        <file>qss/tool_bar.qss</file>
+        <file>qss/menu.qss</file>
+
+        <file>images/logo.png</file>
+        <file>images/tool_bar/photo.svg</file>
+        <file>images/tool_bar/photo.png</file>
+        <file>images/tool_bar/collection.svg</file>
+        <file>images/tool_bar/collection.png</file>
+        <file>images/tool_bar/folder.svg</file>
+        <file>images/tool_bar/folder.png</file>
+        <file>images/tool_bar/zoomIn.svg</file>
+        <file>images/tool_bar/zoomIn.png</file>
+        <file>images/tool_bar/zoomOut.svg</file>
+        <file>images/tool_bar/zoomOut.png</file>
+        <file>images/tool_bar/rotate.png</file>
+        <file>images/tool_bar/edit.svg</file>
+        <file>images/tool_bar/edit.png</file>
+        <file>images/tool_bar/edit_white.png</file>
+        <file>images/tool_bar/info.svg</file>
+        <file>images/tool_bar/info.png</file>
+        <file>images/tool_bar/info_white.png</file>
+        <file>images/tool_bar/more.svg</file>
+        <file>images/tool_bar/more.png</file>
+        <file>images/tool_bar/save.svg</file>
+        <file>images/tool_bar/save.png</file>
+        <file>images/tool_bar/copy.png</file>
+        <file>images/tool_bar/saveToDir.svg</file>
+        <file>images/tool_bar/export.png</file>
+        <file>images/menu/ChevronRight.png</file>
+        <file>images/image_interface/loadImage.png</file>
+
+    </qresource>
+</RCC>

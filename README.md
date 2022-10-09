@@ -1,5 +1,5 @@
-# Air-Piano
-A face mask detector based on STM32 and Yolov4.
+# Face-Mask-Detector
+A face mask detector based on STM32F103ZET6 and Yolov4.
 
 
 ## Quick start
@@ -71,8 +71,3 @@ A face mask detector based on STM32 and Yolov4.
     conda activate yolov4
     python demo.py
     ```
-
-
-## Reference
-* [[Paper] YOLOv4: Optimal Speed and Accuracy of Object Detection](https://arxiv.org/abs/2004.10934)
-* [[GitHub] bubbliiiing / yolov4-pytorch](https://github.com/bubbliiiing/yolov4-pytorch)
