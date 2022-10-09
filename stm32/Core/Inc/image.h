@@ -17,17 +17,17 @@ public:
     {
     }
 
-    inline uint16_t width() const
+    uint16_t width() const
     {
         return width_;
     }
 
-    inline uint16_t height() const
+    uint16_t height() const
     {
         return height_;
     }
 
-    inline ColorOrder order() const
+    ColorOrder order() const
     {
         return order_;
     }
@@ -44,7 +44,7 @@ public:
     /** @brief 获取颜色
      * @param index 像素的索引值
      */
-    inline uint16_t colorAt(uint16_t index)
+    uint16_t colorAt(uint16_t index)
     {
         uint32_t pos = index * 2;
         if (order_ == ColorOrder::IMAGE_SMALL_END)

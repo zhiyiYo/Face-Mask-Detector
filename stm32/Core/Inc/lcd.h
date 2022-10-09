@@ -2,12 +2,24 @@
 #include "image.h"
 #include "stdint.h"
 
-enum class LCDDirection
+enum class LCDDisplayDirection
 {
     NORMAL,
     ROTATE_90,
     ROTATE_180,
     ROTATE_270
+};
+
+enum class LCDScanDirection
+{
+    L2R_U2D = 0,
+    L2R_D2U = 1,
+    R2L_U2D = 2,
+    R2L_D2U = 3,
+    U2D_L2R = 4,
+    U2D_R2L = 5,
+    D2U_L2R = 6,
+    D2U_R2L = 7
 };
 
 class LCD
@@ -42,18 +54,32 @@ public:
         ENABLE_3G = 0xF2,
     };
 
-    LCD(uint16_t width, uint16_t height, LCDDirection direction = LCDDirection::NORMAL);
+    LCD(uint16_t width,
+        uint16_t height,
+        LCDDisplayDirection direction = LCDDisplayDirection::NORMAL);
 
-    uint16_t id() const
-    {
-        return id_;
-    }
+    uint16_t id() const { return id_; }
+
+    uint16_t width() const { return width_; }
+
+    uint16_t height() const { return height_; }
+
+    /** @brief 绘制一个点
+     * @param color 点的颜色
+     */
+    void drawPoint(uint16_t color) { lcdTypeDef_->ram = color; }
 
     void setCursor(uint16_t x, uint16_t y);
     void setWindow(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-    void setDirection(LCDDirection direction);
-    void drawImage(uint16_t x, uint16_t y, Image image);
+    void setDisplayDirection(LCDDisplayDirection direction);
+    void setScanDirection(LCDScanDirection direction);
+
+    void startDraw();
+
     void clear(uint16_t color);
+    void drawImage(uint16_t x, uint16_t y, Image image);
+    void drawPoint(uint16_t x, uint16_t y, uint16_t color);
+    void drawChar(uint16_t x, uint16_t y, uint16_t color);
 
 private:
     // 驱动号
@@ -66,17 +92,28 @@ private:
     uint16_t height_;
 
     // 显示方向
-    LCDDirection direction_;
+    LCDDisplayDirection direction_;
 
     // 要写的寄存器序号和显存数据寄存器
-    uint16_t* command_;
-    uint16_t* ram_;
+    struct LCDTypeDef
+    {
+        volatile uint16_t command;
+        volatile uint16_t ram;
+    };
+    LCDTypeDef* lcdTypeDef_;
 
-    void setCommand(Command command);
+    /** @brief 设置指令
+     * @param command 指令
+     */
+    void setCommand(Command command) { lcdTypeDef_->command = static_cast<uint16_t>(command); }
+
+    /** @brief 写入数据
+     * @param value 要写入的值
+     */
+    void setData(uint16_t value) { lcdTypeDef_->ram = value; }
 
     uint16_t getData(Command command);
     uint16_t getData();
 
-    void setData(uint16_t value);
-    void setData(Command command, uint16_t value);
+    void setCommand(Command command, uint16_t value);
 };

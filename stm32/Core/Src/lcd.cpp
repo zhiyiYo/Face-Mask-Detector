@@ -2,9 +2,9 @@
 #include "stdio.h"
 #include "stm32f1xx_hal.h"
 
-LCD::LCD(uint16_t width, uint16_t height, LCDDirection direction)
+LCD::LCD(uint16_t width, uint16_t height, LCDDisplayDirection direction)
     : originWidth_(width), originHeight_(height), width_(width), height_(height),
-      direction_(direction), command_((uint16_t*)(0x6C000000 | 0x000007FE)), ram_(command_ + 2)
+      direction_(direction), lcdTypeDef_((LCDTypeDef*)((uint32_t)(0x6C000000 | 0x000007FE)))
 {
     HAL_Delay(50);
     id_ = getData(Command::NOP);
@@ -20,7 +20,7 @@ LCD::LCD(uint16_t width, uint16_t height, LCDDirection direction)
         id_ |= getData();  //读取41
     }
 
-    printf(" LCD ID:%x\r\n", id_);  //打印 LCD ID
+    printf("LCD ID:%x\r\n", id_);  //打印 LCD ID
 
     setCommand(Command::POWER_CONTROL_B);
     setData(0x00);
@@ -131,12 +131,15 @@ LCD::LCD(uint16_t width, uint16_t height, LCDDirection direction)
     setData(0x00);
     setData(0xef);
 
-    setCommand(Command::SLEEP_OUT);  // Exit Sleep
+    setCommand(Command::SLEEP_OUT);
     HAL_Delay(120);
 
-    setCommand(Command::DISPLAY_ON);  // display on
+    setCommand(Command::DISPLAY_ON);
 
-    setDirection(direction);
+    setDisplayDirection(direction);
+    setScanDirection(LCDScanDirection::L2R_U2D);
+
+    // 背光
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
     clear(0xFFFF);
 }
@@ -155,31 +158,15 @@ uint16_t LCD::getData(Command command)
 uint16_t LCD::getData()
 {
     uint16_t ram;  //防止被优化
-    ram = *ram_;
+    ram = lcdTypeDef_->ram;
     return ram;
 }
 
-/** @brief 设置指令
+/** @brief 写入指令，同时写入指令的参数
  * @param command 指令
+ * @param value 要写入的参数
  */
-void LCD::setCommand(Command command)
-{
-    *command_ = static_cast<uint16_t>(command);
-}
-
-/** @brief 写入数据
- * @param value 要写入的值
- */
-void LCD::setData(uint16_t value)
-{
-    *ram_ = value;
-}
-
-/** @brief 写入数据
- * @param command 指令
- * @param value 要写入的值
- */
-void LCD::setData(Command command, uint16_t value)
+void LCD::setCommand(Command command, uint16_t value)
 {
     setCommand(command);
     setData(value);
@@ -188,33 +175,80 @@ void LCD::setData(Command command, uint16_t value)
 /** @brief 设置显示方向
  * @param direction 方向
  */
-void LCD::setDirection(LCDDirection direction)
+void LCD::setDisplayDirection(LCDDisplayDirection direction)
 {
     direction_ = direction;
     switch (direction)
     {
-        case LCDDirection::NORMAL:
+        case LCDDisplayDirection::NORMAL:
             width_ = originWidth_;
             height_ = originHeight_;
-            setData(Command::MEMORY_ACCESS_CONTROL, (1 << 3));
+            setCommand(Command::MEMORY_ACCESS_CONTROL, (1 << 3));
             break;
-        case LCDDirection::ROTATE_90:
+        case LCDDisplayDirection::ROTATE_90:
             width_ = originHeight_;
             height_ = originWidth_;
-            setData(Command::MEMORY_ACCESS_CONTROL, (1 << 3) | (1 << 5) | (1 << 6));
+            setCommand(Command::MEMORY_ACCESS_CONTROL, (1 << 3) | (1 << 5) | (1 << 6));
             break;
-        case LCDDirection::ROTATE_180:
+        case LCDDisplayDirection::ROTATE_180:
             width_ = originWidth_;
             height_ = originHeight_;
-            setData(Command::MEMORY_ACCESS_CONTROL, (1 << 3) | (1 << 7) | (1 << 4) | (1 << 6));
+            setCommand(Command::MEMORY_ACCESS_CONTROL, (1 << 3) | (1 << 7) | (1 << 4) | (1 << 6));
             break;
-        case LCDDirection::ROTATE_270:
+        case LCDDisplayDirection::ROTATE_270:
             width_ = originHeight_;
             height_ = originWidth_;
-            setData(Command::MEMORY_ACCESS_CONTROL, (1 << 3) | (1 << 7) | (1 << 5) | (1 << 4));
+            setCommand(Command::MEMORY_ACCESS_CONTROL, (1 << 3) | (1 << 7) | (1 << 5) | (1 << 4));
             break;
         default: break;
     }
+}
+
+/** @brief 设置扫描方向
+ * @param direction 扫描方向
+ */
+void LCD::setScanDirection(LCDScanDirection direction)
+{
+    if (direction_ == LCDDisplayDirection::ROTATE_90 ||
+        direction_ == LCDDisplayDirection::ROTATE_270)
+    {
+        switch (direction)
+        {
+            case LCDScanDirection::L2R_U2D: direction = LCDScanDirection::D2U_L2R; break;
+            case LCDScanDirection::L2R_D2U: direction = LCDScanDirection::D2U_R2L; break;
+            case LCDScanDirection::R2L_U2D: direction = LCDScanDirection::U2D_L2R; break;
+            case LCDScanDirection::R2L_D2U: direction = LCDScanDirection::U2D_R2L; break;
+            case LCDScanDirection::U2D_L2R: direction = LCDScanDirection::L2R_D2U; break;
+            case LCDScanDirection::U2D_R2L: direction = LCDScanDirection::L2R_U2D; break;
+            case LCDScanDirection::D2U_L2R: direction = LCDScanDirection::R2L_D2U; break;
+            case LCDScanDirection::D2U_R2L: direction = LCDScanDirection::R2L_U2D; break;
+        }
+    }
+
+    uint16_t value = 0x08;
+    switch (direction)
+    {
+        case LCDScanDirection::L2R_U2D: value |= (0 << 7) | (0 << 6) | (0 << 5); break;
+        case LCDScanDirection::L2R_D2U: value |= (1 << 7) | (0 << 6) | (0 << 5); break;
+        case LCDScanDirection::R2L_U2D: value |= (0 << 7) | (1 << 6) | (0 << 5); break;
+        case LCDScanDirection::R2L_D2U: value |= (1 << 7) | (1 << 6) | (0 << 5); break;
+        case LCDScanDirection::U2D_L2R: value |= (0 << 7) | (0 << 6) | (1 << 5); break;
+        case LCDScanDirection::U2D_R2L: value |= (0 << 7) | (1 << 6) | (1 << 5); break;
+        case LCDScanDirection::D2U_L2R: value |= (1 << 7) | (0 << 6) | (1 << 5); break;
+        case LCDScanDirection::D2U_R2L: value |= (1 << 7) | (1 << 6) | (1 << 5); break;
+    }
+
+    setCommand(Command::MEMORY_ACCESS_CONTROL, value);
+
+    // 交换宽度和高度
+    if (((value & 0x20) && (width_ < height_)) || (!(value & 0x20) && (width_ > height_)))
+    {
+        uint16_t temp = width_;
+        width_ = height_;
+        height_ = temp;
+    }
+
+    setWindow(0, 0, width_, height_);
 }
 
 /** @brief 设置光标位置
@@ -230,6 +264,14 @@ void LCD::setCursor(uint16_t x, uint16_t y)
     setCommand(Command::PAGE_ADDRESS_SET);
     setData(y >> 8);
     setData(y & 0XFF);
+}
+
+/** @brief 将光标定位到左上角并开始绘制
+ */
+void LCD::startDraw()
+{
+    setCursor(0, 0);
+    setCommand(Command::WRITE_RAM);
 }
 
 /** @brief 清屏
@@ -291,4 +333,15 @@ void LCD::drawImage(uint16_t x, uint16_t y, Image image)
 
     //恢复显示窗口为全屏
     setWindow(0, 0, width_ - 1, height_ - 1);
+}
+
+/** @brief 绘制一个点
+ * @param x 横坐标
+ * @param y 纵坐标
+ * @param color 点的颜色
+ */
+void LCD::drawPoint(uint16_t x, uint16_t y, uint16_t color)
+{
+    setCursor(x, y);
+    setCommand(Command::WRITE_RAM, color);
 }

@@ -27,7 +27,7 @@ AllowShortBlocksOnASingleLine:	false
 # 允许短的case标签放在同一行
 AllowShortCaseLabelsOnASingleLine:	true
 # 允许短的函数放在同一行: None, InlineOnly(定义在类中), Empty(空函数), Inline(定义在类中，空函数), All
-AllowShortFunctionsOnASingleLine:	Empty
+AllowShortFunctionsOnASingleLine:	All
 # 允许短的if语句保持在同一行
 AllowShortIfStatementsOnASingleLine:	false
 # 允许短的循环保持在同一行

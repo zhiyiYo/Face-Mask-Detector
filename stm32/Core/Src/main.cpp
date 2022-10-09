@@ -26,7 +26,7 @@
 /* USER CODE BEGIN Includes */
 #include "image.h"
 #include "lcd.h"
-#include "shoko.h"
+#include "camera.h"
 #include "stdio.h"
 /* USER CODE END Includes */
 
@@ -94,7 +94,7 @@ int main(void)
 
     /* USER CODE BEGIN 2 */
     LCD lcd(240, 320);
-    lcd.setDirection(LCDDirection::ROTATE_90);
+    Camera camera(&lcd);
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -104,10 +104,7 @@ int main(void)
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
-        Image image(320, 240, ColorOrder::IMAGE_SMALL_END, gImage_shoko + 8);
-        lcd.drawImage(0, 0, image);
-
-        HAL_Delay(1000);
+        camera.refresh();
         /* USER CODE END 3 */
     }
 }
