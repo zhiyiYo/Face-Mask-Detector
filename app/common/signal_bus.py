@@ -4,9 +4,11 @@ from .singleton import Singleton
 
 
 class SignalBus(Singleton, QObject):
-    """ Signal bus in Groove Music """
+    """ 信号总线 """
     switchToImageInterfaceSig = pyqtSignal()  # 切换到图像界面
     switchToSettingInterfaceSig = pyqtSignal()  # 切换到设置界面
 
+    modelChanged = pyqtSignal(str)      # 模型路径改变
+    useGPUChanged = pyqtSignal(bool)    # 启用/禁用显卡加速
 
 signalBus = SignalBus()

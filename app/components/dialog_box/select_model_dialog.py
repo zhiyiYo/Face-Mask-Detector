@@ -311,16 +311,17 @@ class ModelCard(FoldingWindow):
                 self.image,
             )
 
-    def paintText(self, painter, x1, fontSize1, x2, fontSize2):
+    def paintText(self, painter: QPainter, x1, fontSize1, x2, fontSize2):
         """ 绘制文字 """
         # 绘制模型名字
-        font = QFont("Microsoft YaHei", fontSize1, 75)
+        font = QFont("Microsoft YaHei", fontSize1*1.25, 75)
         painter.setFont(font)
         name = QFontMetrics(font).elidedText(
             self.modelName, Qt.ElideRight, self.width()-48)
-        painter.drawText(x1, 37, name)
+        painter.drawText(x1, 30, name)
+
         # 绘制模型路径
-        font = QFont("Microsoft YaHei", fontSize1)
+        font = QFont("Microsoft YaHei", fontSize2)
         painter.setFont(font)
         path = QFontMetrics(font).elidedText(
             self.modelPath, Qt.ElideRight, self.width()-24)

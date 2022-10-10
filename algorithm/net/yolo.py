@@ -8,8 +8,8 @@ import torch
 from PIL import Image
 from torch import nn
 from torch.nn import functional as F
-from utils.augmentation_utils import ToTensor
-from utils.box_utils import draw, rescale_bbox
+from ..utils.augmentation_utils import ToTensor
+from ..utils.box_utils import draw, rescale_bbox
 
 from .detector import Detector
 
@@ -399,7 +399,7 @@ class Yolo(nn.Module):
         """
         return self.detector(self(x))
 
-    def detect(self, image: Union[str, np.ndarray], classes: List[str], use_gpu=True, show_conf=True) -> Image.Image:
+    def detect(self, image: Union[str, np.ndarray, Image.Image], classes: List[str], use_gpu=True, show_conf=True) -> Image.Image:
         """ 对图片进行目标检测
 
         Parameters
@@ -426,6 +426,8 @@ class Yolo(nn.Module):
                 image = np.array(Image.open(image).convert('RGB'))
             else:
                 raise FileNotFoundError("图片不存在，请检查图片路径！")
+        elif isinstance(image, Image.Image):
+            image = np.array(image.convert('RGB'))
 
         h, w, channels = image.shape
         if channels != 3:

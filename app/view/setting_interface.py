@@ -9,24 +9,17 @@ from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QLabel, QWidget
 from torch import cuda
 
-from app.common.config import Config
+from app.common.config import config
+from app.common.signal_bus import signalBus
 
 
 class SettingInterface(ScrollArea):
     """ 设置界面 """
 
-    modelChanged = pyqtSignal(str)
     enableAcrylicChanged = pyqtSignal(bool)
-    enableGPUChanged = pyqtSignal(bool)
-    confThreshChanged = pyqtSignal(float)
-    showClassNameChanged = pyqtSignal(bool)
-    showConfidenceChanged = pyqtSignal(bool)
-    transformerChanged = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.config = Config()
-
         # 滚动部件
         self.scrollWidget = QWidget(self)
 
@@ -95,24 +88,25 @@ class SettingInterface(ScrollArea):
         self.confValueLabel.move(184, 393)
 
         # 初始化亚克力背景开关按钮
-        enableAcrylic = self.config['enable-acrylic']
+        enableAcrylic = config.get(config.enableAcrylicBackground)
         self.acrylicSwitchButton.setText(
             self.tr('On') if enableAcrylic else self.tr('Off'))
         self.acrylicSwitchButton.setChecked(enableAcrylic)
 
         # 初始化 GPU 开关按钮
-        isUseGPU = self.config['enable-gpu'] and cuda.is_available()
+        isUseGPU = config.get(config.useGPU) and cuda.is_available()
         self.useGPUSwitchButton.setText(
             self.tr('On') if isUseGPU else self.tr('Off'))
         self.useGPUSwitchButton.setChecked(isUseGPU)
         self.useGPUSwitchButton.setEnabled(cuda.is_available())
 
         # 初始化置信度滑动条
-        self.confSlider.setRange(1, 99)
+        low, high = config.confidenceThreshold.range
+        self.confSlider.setRange(low*100, high*100)
         self.confSlider.setSingleStep(1)
-        self.confSlider.setValue(self.config['confidence-threshold']*100)
+        self.confSlider.setValue(config.get(config.confidenceThreshold)*100)
         self.confValueLabel.setText(
-            f"{self.config['confidence-threshold']:.2f}")
+            f"{config.get(config.confidenceThreshold):.2f}")
 
         # 设置层叠样式
         self.__setQss()
@@ -144,41 +138,43 @@ class SettingInterface(ScrollArea):
         painter = QPainter(self.viewport())
         painter.setBrush(Qt.white)
         painter.setPen(Qt.NoPen)
-        painter.drawRect(0, 0, self.width(), self.height()-110)
+        painter.drawRect(0, 0, self.width(), self.height() -
+                         self.contentsMargins().top())
 
     def __showSelectModelDialog(self):
         """ 显示选择模型对话框 """
-        w = SelectModelDialog(self.config['model'], self.window())
+        w = SelectModelDialog(config.get(config.modelPath), self.window())
         w.modelChangedSignal.connect(self.__onModelChanged)
         w.exec_()
 
     def __onModelChanged(self, model: str):
         """ 模型改变信号槽函数 """
-        if model != self.config['model']:
-            self.config['model'] = model
-            self.modelChanged.emit(model)
+        if model == config.get(config.modelPath):
+            return
 
-    def __onEnableAcrylicChanged(self, isEnableAcrylic: bool):
+        config.set(config.modelPath, model)
+        signalBus.modelChanged.emit(model)
+
+    def __onEnableAcrylicChanged(self, isEnable: bool):
         """ 使用亚克力背景开关按钮的开关状态变化槽函数 """
-        self.config['enable-acrylic'] = isEnableAcrylic
+        config.set(config.enableAcrylicBackground, isEnable)
         self.acrylicSwitchButton.setText(
-            self.tr('On') if isEnableAcrylic else self.tr('Off'))
-        self.enableAcrylicChanged.emit(isEnableAcrylic)
+            self.tr('On') if isEnable else self.tr('Off'))
+        self.enableAcrylicChanged.emit(isEnable)
 
-    def __onUseGPUChanged(self, isUseGPU: bool):
+    def __onUseGPUChanged(self, useGPU: bool):
         """ 使用 GPU 加速开关按钮的开关状态改变槽函数 """
-        self.config['enable-gpu'] = isUseGPU
+        config.set(config.useGPU, useGPU)
         self.useGPUSwitchButton.setText(
-            self.tr('On') if isUseGPU else self.tr('Off'))
-        self.enableGPUChanged.emit(isUseGPU)
+            self.tr('On') if useGPU else self.tr('Off'))
+        signalBus.useGPUChanged.emit(useGPU)
 
     def __onConfThreshChanged(self, thresh: int):
         """ 调整置信度阈值槽函数 """
         thresh /= 100
-        self.config['confidence-threshold'] = thresh
+        config.set(config.confidenceThreshold, thresh)
         self.confValueLabel.setText(f"{(thresh):.2f}")
         self.confValueLabel.adjustSize()
-        self.confThreshChanged.emit(thresh)
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """

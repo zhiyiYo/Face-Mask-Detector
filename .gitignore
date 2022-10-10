@@ -13,6 +13,9 @@
 log/
 *.log
 
+# 忽略配置文件
+app/config/
+
 # 忽略测试文件
 test.py
 test.ipynb

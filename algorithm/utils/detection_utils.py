@@ -4,7 +4,8 @@ from typing import List
 import cv2 as cv
 import numpy as np
 from imutils.video import FPS, WebcamVideoStream
-from net import Yolo
+
+from ..net import Yolo
 
 
 def image_detect(model_path: str, image_path: str, classes: List[str], image_size=416,

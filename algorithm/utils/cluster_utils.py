@@ -4,7 +4,7 @@ from xml.etree import ElementTree as ET
 
 import numpy as np
 
-from utils.box_utils import jaccard_overlap_numpy as iou
+from .box_utils import jaccard_overlap_numpy as iou
 
 
 class AnchorKmeans:

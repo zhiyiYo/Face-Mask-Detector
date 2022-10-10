@@ -1,11 +1,13 @@
 # coding:utf-8
+from app.common.ai_thread import AIThread
 from app.components.dialog_box import Dialog
 from app.components.widgets.label import PixmapLabel
-from PyQt5.QtCore import QRectF, QSize, Qt, pyqtSignal, QFile
+from PyQt5.QtCore import QFile, QRectF, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QPainter, QPixmap, QTransform, QWheelEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QGraphicsItem,
                              QGraphicsPixmapItem, QGraphicsScene,
                              QGraphicsView, QLabel, QWidget)
+
 from .tool_bar import ToolBar
 
 
@@ -91,12 +93,12 @@ class ImageViewer(QGraphicsView):
         else:
             self.resetScale()
 
-    def setImage(self, imagePath: str):
+    def setImage(self, image: QPixmap):
         """ 设置显示的图片 """
         self.resetTransform()
 
         # 刷新图片
-        self.pixmap = QPixmap(imagePath)
+        self.pixmap = image
         self.pixmapItem.setPixmap(self.pixmap)
 
         # 调整图片大小
@@ -221,14 +223,21 @@ class ImageInterface(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.isDetectEnabled = False
+        self.image = QPixmap()  # 没有绘制边界框的原始图像
+
         # 导航提示
         self.logo = PixmapLabel(self)
         self.loadImageLabel = PixmapLabel(self)
         self.hintLabel = QLabel(
             self.tr('Click the open serial port button to detect'), self)
 
+        # 图像查看器和工具栏
         self.imageViewer = ImageViewer(self)
         self.toolBar = ToolBar(self)
+
+        # 线程
+        self.aiThread = AIThread(self)
 
         self.__initWidget()
 
@@ -273,7 +282,7 @@ class ImageInterface(QWidget):
         # 调整工具栏位置
         self.toolBar.move(w//2 - self.toolBar.width()//2, 60)
 
-    def saveCurrentImage(self):
+    def __saveImage(self):
         """ 保存当前图片 """
         if self.hintLabel.isVisible():
             self.showHintOpenImageDialog()
@@ -285,7 +294,16 @@ class ImageInterface(QWidget):
         if path:
             self.imageViewer.pixmap.save(path)
 
-    def copyCurrentImage(self):
+    def setImage(self, image: QPixmap):
+        """ 设置图像 """
+        self.image = image
+        self.imageViewer.setImage(image)
+        self.hintLabel.hide()
+        self.loadImageLabel.hide()
+        if self.isDetectEnabled:
+            self.aiThread.detect(image)
+
+    def __copyImage(self):
         """ 复制当前图片到剪贴板 """
         if self.hintLabel.isVisible():
             self.showHintOpenImageDialog()
@@ -302,10 +320,19 @@ class ImageInterface(QWidget):
         # w.yesSignal.connect(self.openSerialPort)
         w.exec()
 
+    def __setDetectEnabled(self, enabled: bool):
+        """ 启用/禁用口罩检测槽函数 """
+        self.isDetectEnabled = enabled
+        if self.image and enabled:
+            self.aiThread.detect(self.image)
+
     def connectSignalToSlot(self):
         """ 信号连接到槽 """
-        self.toolBar.copyImageSignal.connect(self.copyCurrentImage)
-        self.toolBar.saveImageSignal.connect(self.saveCurrentImage)
+        self.toolBar.copyImageSignal.connect(self.__copyImage)
+        self.toolBar.saveImageSignal.connect(self.__saveImage)
         self.toolBar.zoomInSignal.connect(self.imageViewer.zoomIn)
         self.toolBar.zoomOutSignal.connect(self.imageViewer.zoomOut)
         self.toolBar.rotateSignal.connect(self.imageViewer.rot90)
+        self.toolBar.detectSignal.connect(self.__setDetectEnabled)
+
+        self.aiThread.detectFinished.connect(self.imageViewer.setImage)

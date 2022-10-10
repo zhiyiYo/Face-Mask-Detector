@@ -1,17 +1,18 @@
 # coding:utf-8
-from os import path
-from pathlib import Path
-from typing import Dict, List, Tuple, Union
-from xml.etree import ElementTree as ET
 import random
+from os import path
+from typing import List, Tuple, Union
 
 import cv2 as cv
 import numpy as np
 import torch
-from torch.utils.data import Dataset, DataLoader
-from utils.augmentation_utils import Transformer
-from utils.annotation_utils import VocAnnotationReader, YoloAnnotationReader, AnnotationReaderBase
-from utils.box_utils import corner_to_center_numpy
+from torch.utils.data import DataLoader, Dataset
+
+from ..utils.annotation_utils import (AnnotationReaderBase,
+                                      VocAnnotationReader,
+                                      YoloAnnotationReader)
+from ..utils.augmentation_utils import Transformer
+from ..utils.box_utils import corner_to_center_numpy
 
 
 class DatasetBase(Dataset):

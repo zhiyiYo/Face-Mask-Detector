@@ -5,13 +5,14 @@ from xml.etree import ElementTree as ET
 
 import numpy as np
 import torch
-from torch import cuda
 from PIL import Image
 from prettytable import PrettyTable
-from utils.box_utils import jaccard_overlap_numpy, center_to_corner_numpy, rescale_bbox
-from utils.augmentation_utils import ToTensor
-from utils.log_utils import Logger
+from torch import cuda
 
+from ..utils.augmentation_utils import ToTensor
+from ..utils.box_utils import (center_to_corner_numpy, jaccard_overlap_numpy,
+                               rescale_bbox)
+from ..utils.log_utils import Logger
 from .dataset import VOCDataset
 from .yolo import Yolo
 

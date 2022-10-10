@@ -4,7 +4,7 @@ import numpy as np
 
 import torch
 from torch import Tensor, nn
-from utils.box_utils import match, decode, ciou, iou
+from ..utils.box_utils import match, decode, ciou, iou
 
 
 class YoloLoss(nn.Module):

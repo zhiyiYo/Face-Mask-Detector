@@ -26,7 +26,7 @@ def loggerCache(cls):
 class Logger:
     """ Logger class """
 
-    logFolder = Path('cache/log')
+    logFolder = Path('log')
 
     def __init__(self, fileName: str):
         """
