@@ -1,0 +1,10 @@
+Tooltip{
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 4px;
+    background-color: rgb(243, 243, 243);
+}
+
+QLabel{
+    background-color: transparent;
+    font: 12px 'Segoe UI', 'Microsoft YaHei';
+}

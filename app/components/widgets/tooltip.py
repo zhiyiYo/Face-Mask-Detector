@@ -15,7 +15,7 @@ class Tooltip(QFrame):
 
         # 设置布局
         self.hBox.addWidget(self.label)
-        self.hBox.setContentsMargins(10, 7, 10, 7)
+        self.hBox.setContentsMargins(8, 6, 8, 6)
 
         # 设置阴影
         self.shadowEffect = QGraphicsDropShadowEffect(self)

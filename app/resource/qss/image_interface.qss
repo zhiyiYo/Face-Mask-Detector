@@ -1,0 +1,14 @@
+ImageInterface, ImageViewer {
+    background-color: transparent;
+}
+
+ImageViewer {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+#hintLabel {
+    font: 24px 'Segoe UI', 'Microsoft YaHei';
+    color: rgb(0, 153, 188);
+}

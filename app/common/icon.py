@@ -2,7 +2,6 @@
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
 from PyQt5.QtGui import QIcon, QIconEngine, QImage, QPainter, QPixmap
 
-from .config import config
 
 
 class PixmapIconEngine(QIconEngine):
@@ -29,8 +28,3 @@ class Icon(QIcon):
     def __init__(self, iconPath: str):
         self.iconPath = iconPath
         super().__init__(PixmapIconEngine(iconPath))
-
-
-def getIconColor():
-    """ get the color of icon based on theme """
-    return "white" if config.theme == 'dark' else 'black'

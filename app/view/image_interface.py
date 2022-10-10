@@ -1,9 +1,12 @@
 # coding:utf-8
-from PyQt5.QtCore import QRectF, QSize, Qt, pyqtSignal
-from PyQt5.QtGui import (QPainter, QPixmap, QTransform,
-                         QWheelEvent)
-from PyQt5.QtWidgets import (QAction, QGraphicsItem, QGraphicsPixmapItem,
-                             QGraphicsScene, QGraphicsView)
+from app.components.dialog_box import Dialog
+from app.components.widgets.label import PixmapLabel
+from PyQt5.QtCore import QRectF, QSize, Qt, pyqtSignal, QFile
+from PyQt5.QtGui import QPainter, QPixmap, QTransform, QWheelEvent
+from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QGraphicsItem,
+                             QGraphicsPixmapItem, QGraphicsScene,
+                             QGraphicsView, QLabel, QWidget)
+from .tool_bar import ToolBar
 
 
 class ImageViewer(QGraphicsView):
@@ -16,10 +19,7 @@ class ImageViewer(QGraphicsView):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.drawStartPos = None
-        self.isEditModeEnabled = False
         self.isDrawModeEnabled = False
-        self.isRectItemVisible = False
         self.zoomInTimes = 0
         self.maxZoomInTimes = 22
         self.angle = 0
@@ -94,7 +94,6 @@ class ImageViewer(QGraphicsView):
     def setImage(self, imagePath: str):
         """ 设置显示的图片 """
         self.resetTransform()
-        self.clearRectItems()
 
         # 刷新图片
         self.pixmap = QPixmap(imagePath)
@@ -216,3 +215,97 @@ class ImageViewer(QGraphicsView):
         self.__setDragEnabled(False)
         self.displayedImageSize.transpose()
 
+
+class ImageInterface(QWidget):
+    """ 图像界面 """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # 导航提示
+        self.logo = PixmapLabel(self)
+        self.loadImageLabel = PixmapLabel(self)
+        self.hintLabel = QLabel(
+            self.tr('Click the open serial port button to detect'), self)
+
+        self.imageViewer = ImageViewer(self)
+        self.toolBar = ToolBar(self)
+
+        self.__initWidget()
+
+    def __initWidget(self):
+        """ 初始化小部件 """
+        self.logo.setPixmap(QPixmap(':/images/logo.png').scaled(
+            376, 376, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.loadImageLabel.setPixmap(
+            QPixmap(':/images/image_interface/loadImage.png'))
+
+        self.__setQss()
+        self.connectSignalToSlot()
+
+    def __setQss(self):
+        """ 设置层叠样式 """
+        self.hintLabel.setObjectName("hintLabel")
+
+        f = QFile(":/qss/image_interface.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
+
+        # 调整标签大小
+        self.logo.adjustSize()
+        self.hintLabel.adjustSize()
+        self.loadImageLabel.adjustSize()
+
+    def resizeEvent(self, e):
+        self.imageViewer.move(0, 32)
+        self.imageViewer.resize(self.width(), self.height()-40)
+        w, h = self.width(), self.height()
+
+        self.logo.move(w//2 - self.logo.width()//2,
+                       h//2 - self.logo.height()//2)
+
+        # 调整提示标签位置
+        w_ = 50 + self.hintLabel.width()
+        y = self.logo.y() + self.logo.pixmap().height() + 50
+        self.loadImageLabel.move(w//2-w_//2, y+7)
+        self.hintLabel.move(self.loadImageLabel.x()+50, y+9)
+
+        # 调整工具栏位置
+        self.toolBar.move(w//2 - self.toolBar.width()//2, 60)
+
+    def saveCurrentImage(self):
+        """ 保存当前图片 """
+        if self.hintLabel.isVisible():
+            self.showHintOpenImageDialog()
+            return
+
+        path, _ = QFileDialog.getSaveFileName(
+            self, self.tr('save as'), '.', 'JPG (*.jpg;*.jpeg;*.jpe;*.jiff);;PNG (*.png);;GIF (*.gif)')
+
+        if path:
+            self.imageViewer.pixmap.save(path)
+
+    def copyCurrentImage(self):
+        """ 复制当前图片到剪贴板 """
+        if self.hintLabel.isVisible():
+            self.showHintOpenImageDialog()
+            return
+
+        QApplication.clipboard().setPixmap(self.imageViewer.pixmap)
+
+    def showHintOpenImageDialog(self):
+        """ 显示提示打开图片的对话框 """
+        title = self.tr('Are you sure to open serial port')
+        content = self.tr(
+            'No image for detection. Do you want to open the serial port to load image?')
+        w = Dialog(title, content, self.window())
+        # w.yesSignal.connect(self.openSerialPort)
+        w.exec()
+
+    def connectSignalToSlot(self):
+        """ 信号连接到槽 """
+        self.toolBar.copyImageSignal.connect(self.copyCurrentImage)
+        self.toolBar.saveImageSignal.connect(self.saveCurrentImage)
+        self.toolBar.zoomInSignal.connect(self.imageViewer.zoomIn)
+        self.toolBar.zoomOutSignal.connect(self.imageViewer.zoomOut)
+        self.toolBar.rotateSignal.connect(self.imageViewer.rot90)

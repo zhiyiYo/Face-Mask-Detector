@@ -1,0 +1,110 @@
+SettingInterface {
+    background-color: white;
+    border: none;
+}
+
+QWidget{
+    background-color: white;
+}
+
+/* 滚动条 */
+QSlider:horizontal {
+    height: 21px;
+    width: 150px;
+    background-color: transparent;
+}
+
+QSlider::groove:horizontal {
+    border: none;
+    height: 4px;
+}
+
+QSlider::handle:horizontal {
+    width: 21px;
+    height: 21px;
+    border-radius: 10px;
+    margin-top: -8px;
+    margin-bottom: -8px;
+    background-color: rgb(0, 153, 188);
+}
+
+QSlider::handle:horizontal:hover {
+    background-color: rgb(72, 210, 242);
+}
+
+QSlider::handle:horizontal:pressed {
+    background-color: rgb(0, 107, 131);
+}
+
+
+QSlider::sub-page:horizontal {
+    /*已划过部分的颜色*/
+    background: rgb(0, 153, 187);
+    height: 4px;
+    border-radius: 2px;
+}
+
+QSlider::add-page:horizontal {
+    background-color: rgb(153, 153, 153);
+    height: 4px;
+    border-radius: 2px;
+}
+
+/* 滚动条 */
+QScrollBar {
+    background: white;
+    width: 4px;
+    margin-right: 2px;
+    margin-top: 88px;
+}
+
+/*隐藏上箭头*/
+QScrollBar::sub-line {
+    background: transparent;
+}
+
+/*隐藏下箭头*/
+QScrollBar::add-line {
+    background: transparent;
+}
+
+QScrollBar::handle {
+    background: rgb(122, 122, 122);
+    border: 2px solid rgb(128, 128, 128);
+    border-radius: 1px;
+    min-height: 32px;
+    background-color: transparent;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+/* 标签 */
+QLabel {
+    background-color: transparent;
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+}
+
+QLabel#settingLabel {
+    font: 33px 'Segoe UI Semilight', 'Microsoft YaHei Light';
+}
+
+QLabel#titleLabel {
+    font: 23px 'Segoe UI', 'Microsoft YaHei';
+}
+
+QLabel#clickableLabel {
+    color: rgb(0, 153, 188);
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+}
+
+QLabel#clickableLabel:hover {
+    color: rgb(154, 154, 154);
+}
+
+QLabel#settingLabel{
+    font: 26px 'Segoe UI', 'Microsoft YaHei';
+}
+
