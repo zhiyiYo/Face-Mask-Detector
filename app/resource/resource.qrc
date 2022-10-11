@@ -51,9 +51,7 @@
         <file>images/setting_interface/黑色加号.png</file>
         <file>images/setting_interface/CheckMark.png</file>
         <file>images/setting_interface/CheckMark_pressed.png</file>
-        <file>images/setting_interface/search.svg</file>
-        <file>images/setting_interface/paint.svg</file>
-        <file>images/setting_interface/share.svg</file>
+        <file>images/setting_interface/checkbox_down_arrow.svg</file>
 
     </qresource>
 </RCC>

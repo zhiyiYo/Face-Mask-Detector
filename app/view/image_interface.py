@@ -1,4 +1,6 @@
 # coding:utf-8
+from app.common.config import config
+from app.common.signal_bus import signalBus
 from app.common.ai_thread import AIThread
 from app.components.dialog_box import Dialog
 from app.components.widgets.label import PixmapLabel
@@ -285,7 +287,7 @@ class ImageInterface(QWidget):
     def __saveImage(self):
         """ 保存当前图片 """
         if self.hintLabel.isVisible():
-            self.showHintOpenImageDialog()
+            self.__showHintOpenImageDialog()
             return
 
         path, _ = QFileDialog.getSaveFileName(
@@ -306,28 +308,64 @@ class ImageInterface(QWidget):
     def __copyImage(self):
         """ 复制当前图片到剪贴板 """
         if self.hintLabel.isVisible():
-            self.showHintOpenImageDialog()
+            self.__showHintOpenImageDialog()
             return
 
         QApplication.clipboard().setPixmap(self.imageViewer.pixmap)
 
-    def showHintOpenImageDialog(self):
+    def __showHintOpenImageDialog(self):
         """ 显示提示打开图片的对话框 """
         title = self.tr('Are you sure to open serial port')
         content = self.tr(
             'No image for detection. Do you want to open the serial port to load image?')
         w = Dialog(title, content, self.window())
-        # w.yesSignal.connect(self.openSerialPort)
+        w.yesSignal.connect(self.__openPort)
+        w.exec()
+
+    def __showHintSelectModelDialog(self):
+        """ 显示提示选择模型的对话框 """
+        title = self.tr('Are you sure to select Face Mask Detector')
+        content = self.tr(
+            'No model is selected for detection. Do you want to select a model?')
+        w = Dialog(title, content, self.window())
+        w.yesSignal.connect(signalBus.switchToSettingInterfaceSig)
         w.exec()
 
     def __setDetectEnabled(self, enabled: bool):
         """ 启用/禁用口罩检测槽函数 """
         self.isDetectEnabled = enabled
         if self.image and enabled:
-            self.aiThread.detect(self.image)
+            if not config.get(config.modelPath):
+                self.toolBar.setDetectButtonSelected(False)
+                self.__showHintSelectModelDialog()
+            else:
+                self.aiThread.detect(self.image)
+
+    def __showOpenPortDialog(self):
+        """ 显示打开串口对话框 """
+        title = self.tr('Are you sure to open serial port')
+        selectedPort = config.get(config.serialPort)
+        if selectedPort:
+            content = self.tr('The currently selected serial port is') + \
+                f'"{selectedPort}"' + self.tr('. Are you sure to load images from this serial port?')
+            w = Dialog(title, content, self.window())
+            w.cancelSignal.connect(signalBus.switchToSettingInterfaceSig)
+            w.yesSignal.connect(self.__openPort)
+        else:
+            self.toolBar.setOpenPortButtonSelected(False)
+            content = self.tr(
+                'No serial port is currently selected. Do you want to switch to the setting interface to select a serial port?')
+            w = Dialog(title, content, self.window())
+            w.yesSignal.connect(signalBus.switchToSettingInterfaceSig)
+
+        w.exec()
+
+    def __openPort(self):
+        """ 打开串口 """
 
     def connectSignalToSlot(self):
         """ 信号连接到槽 """
+        self.toolBar.openPortSignal.connect(self.__showOpenPortDialog)
         self.toolBar.copyImageSignal.connect(self.__copyImage)
         self.toolBar.saveImageSignal.connect(self.__saveImage)
         self.toolBar.zoomInSignal.connect(self.imageViewer.zoomIn)
@@ -336,3 +374,5 @@ class ImageInterface(QWidget):
         self.toolBar.detectSignal.connect(self.__setDetectEnabled)
 
         self.aiThread.detectFinished.connect(self.imageViewer.setImage)
+
+        signalBus.modelChanged.connect(self.aiThread.loadModel)

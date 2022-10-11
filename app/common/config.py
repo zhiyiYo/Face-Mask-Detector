@@ -228,6 +228,9 @@ class Config(Singleton):
     enableAcrylicBackground = ConfigItem(
         "MainWindow", "EnableAcrylicBackground", False, BoolValidator())
 
+    # serial port
+    serialPort = ConfigItem("SerialPort", "Selected", "")
+
     def __init__(self):
         self.load()
 

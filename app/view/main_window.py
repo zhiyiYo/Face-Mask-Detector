@@ -1,5 +1,6 @@
 # coding: utf-8
 from app.common import resource
+from app.common.config import config
 from app.common.signal_bus import signalBus
 from app.components.qframelesswindow import AcrylicWindow
 from app.components.title_bar import TitleBar
@@ -28,8 +29,10 @@ class MainWindow(AcrylicWindow):
     def initWidget(self):
         """ 初始化小部件 """
         self.resize(800, 700)
+        self.setObjectName('mainWindow')
         self.setWindowIcon(QIcon(":/images/logo.png"))
         self.setWindowTitle(self.tr("Face Mask Detector"))
+        self.setAcrylicEnabled(True)
 
         # 居中
         desktop = QApplication.desktop().availableGeometry()
@@ -42,6 +45,16 @@ class MainWindow(AcrylicWindow):
 
         self.titleBar.raise_()
         self.connectSignalToSlot()
+
+    def setAcrylicEnabled(self, isEnabled: bool):
+        """ 设置窗口特效 """
+        if isEnabled:
+            self.windowEffect.setAcrylicEffect(self.winId(), "FFFFFFE6")
+            self.setStyleSheet("#mainWindow{background:transparent}")
+        else:
+            self.setStyleSheet("#mainWindow{background:#F3F3F3}")
+            self.windowEffect.addShadowEffect(self.winId())
+            self.windowEffect.removeBackgroundEffect(self.winId())
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
@@ -59,5 +72,6 @@ class MainWindow(AcrylicWindow):
 
     def connectSignalToSlot(self):
         """ 信号连接到槽 """
+        self.settingInterface.enableAcrylicChanged.connect(self.setAcrylicEnabled)
         self.titleBar.returnButton.clicked.connect(self.switchToImageInterface)
         signalBus.switchToSettingInterfaceSig.connect(self.switchToSettingInterface)

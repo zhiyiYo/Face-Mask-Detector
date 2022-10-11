@@ -1,4 +1,5 @@
 # coding:utf-8
+from serial.tools import list_ports
 from app.components.dialog_box import SelectModelDialog
 from app.components.widgets.label import ClickableLabel
 from app.components.widgets.scroll_area import ScrollArea
@@ -6,7 +7,7 @@ from app.components.widgets.slider import Slider
 from app.components.widgets.switch_button import SwitchButton
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QLabel, QWidget
+from PyQt5.QtWidgets import QLabel, QWidget, QComboBox, QStyledItemDelegate
 from torch import cuda
 
 from app.common.config import config
@@ -53,6 +54,12 @@ class SettingInterface(ScrollArea):
         self.confSlider = Slider(Qt.Horizontal, self.scrollWidget)
         self.confValueLabel = QLabel(self.scrollWidget)
 
+        # 串口
+        self.serialLabel = QLabel(self.tr('Serial port'), self.scrollWidget)
+        self.serialHintLabel = QLabel(
+            self.tr('Select the serial port to load image'), self.scrollWidget)
+        self.serialComboBox = QComboBox(self.scrollWidget)
+
         # 初始化
         self.__initWidget()
 
@@ -87,6 +94,11 @@ class SettingInterface(ScrollArea):
         self.confSlider.move(24, 393)
         self.confValueLabel.move(184, 393)
 
+        # 串口
+        self.serialLabel.move(24, 440)
+        self.serialHintLabel.move(24, 478)
+        self.serialComboBox.move(24, 503)
+
         # 初始化亚克力背景开关按钮
         enableAcrylic = config.get(config.enableAcrylicBackground)
         self.acrylicSwitchButton.setText(
@@ -108,6 +120,9 @@ class SettingInterface(ScrollArea):
         self.confValueLabel.setText(
             f"{config.get(config.confidenceThreshold):.2f}")
 
+        # 初始化串口列表
+        self.__getSerialPorts()
+
         # 设置层叠样式
         self.__setQss()
 
@@ -121,6 +136,7 @@ class SettingInterface(ScrollArea):
         self.acrylicLabel.setObjectName('titleLabel')
         self.modelInPCLabel.setObjectName('titleLabel')
         self.confLabel.setObjectName('titleLabel')
+        self.serialLabel.setObjectName('titleLabel')
         self.selectModelLabel.setObjectName("clickableLabel")
 
         f = QFile(':/qss/setting_interface.qss')
@@ -176,6 +192,19 @@ class SettingInterface(ScrollArea):
         self.confValueLabel.setText(f"{(thresh):.2f}")
         self.confValueLabel.adjustSize()
 
+    def __getSerialPorts(self):
+        """ 获取所有串口号 """
+        ports = [i.name for i in list_ports.comports()]
+        self.serialComboBox.addItems(ports)
+
+        # 设置选中的 Item
+        selectedPort = config.get(config.serialPort)
+        if selectedPort in ports:
+            self.serialComboBox.setCurrentText(selectedPort)
+
+        self.serialComboBox.view().setItemDelegate(
+            QStyledItemDelegate(self.serialComboBox.view()))
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.selectModelLabel.clicked.connect(self.__showSelectModelDialog)
@@ -184,3 +213,5 @@ class SettingInterface(ScrollArea):
             self.__onEnableAcrylicChanged)
         self.useGPUSwitchButton.checkedChanged.connect(
             self.__onUseGPUChanged)
+        self.serialComboBox.currentTextChanged.connect(
+            lambda i: config.set(config.serialPort, i))

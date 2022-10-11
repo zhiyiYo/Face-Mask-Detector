@@ -76,7 +76,12 @@ class ToolBar(QFrame):
     def __onDetectButtonClicked(self):
         """ 检测按钮点击槽函数 """
         isSelected = self.detectButton.property("selected")
-        if not isSelected:
+        self.setDetectButtonSelected(not isSelected)
+        self.detectSignal.emit(not isSelected)
+
+    def setDetectButtonSelected(self, isSelected: bool):
+        """ 设置检测按钮的选中状态 """
+        if isSelected:
             self.detectButton.setProperty('selected', True)
             self.detectButton.setIcon(Icon(':/images/tool_bar/detect_white.png'))
         else:
@@ -85,12 +90,16 @@ class ToolBar(QFrame):
 
         # 更新样式
         self.detectButton.setStyle(QApplication.style())
-        self.detectSignal.emit(not isSelected)
 
     def __onOpenPortButtonClicked(self):
         """ 打开串口按钮点击槽函数 """
         isSelected = self.openPortButton.property("selected")
-        if not isSelected:
+        self.setOpenPortButtonSelected(not isSelected)
+        self.openPortSignal.emit(not isSelected)
+
+    def setOpenPortButtonSelected(self, isSelected: bool):
+        """ 设置打开串口按钮的选中状态 """
+        if isSelected:
             self.openPortButton.setProperty('selected', True)
             self.openPortButton.setIcon(Icon(':/images/tool_bar/camera_white.png'))
         else:
@@ -99,7 +108,6 @@ class ToolBar(QFrame):
 
         # 更新样式
         self.openPortButton.setStyle(QApplication.style())
-        self.openPortSignal.emit(not isSelected)
 
     def __setQss(self):
         """ 设置层叠样式 """

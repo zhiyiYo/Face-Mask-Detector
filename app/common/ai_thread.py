@@ -1,9 +1,8 @@
 # coding:utf-8
 import os
 
-import torch
 import numpy as np
-import cv2 as cv
+import torch
 from algorithm.net import Yolo
 from algorithm.net.dataset import VOCDataset
 from PIL import Image
@@ -29,7 +28,7 @@ class AIThread(QThread):
         self.loadModel()
 
     def run(self):
-        """ 检测图片中的热斑 """
+        """ 检测图片中的口罩 """
         if self.model is None:
             logger.warning('当前未选择任何模型！')
             return

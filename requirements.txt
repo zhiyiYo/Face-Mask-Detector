@@ -10,3 +10,4 @@ pywin32==227
 pywin32-ctypes==0.2.0
 PyQt5==5.15.6
 PyQt5-sip==12.10.1
+pyserial==3.5

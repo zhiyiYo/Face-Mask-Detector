@@ -108,3 +108,45 @@ QLabel#settingLabel{
     font: 26px 'Segoe UI', 'Microsoft YaHei';
 }
 
+
+QComboBox {
+    border: 2px solid rgba(0, 0, 0, 102);
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 3px;
+    padding-bottom: 4px;
+}
+
+
+QComboBox:hover:!pressed {
+    border-color: rgb(102, 102, 102);
+}
+
+QComboBox::pressed {
+    background: rgb(204, 204, 204);
+}
+
+QComboBox QAbstractItemView {
+    border: 1px solid rgb(204, 204, 204);
+    background-color: white;
+    padding-left: 9px;
+    padding-right: 9px;
+}
+
+QComboBox QAbstractItemView::item {
+    padding-top: 3px;
+    padding-bottom: 4px;
+    font: 12px 'Segoe UI', 'Microsoft YaHei';
+}
+
+
+QComboBox::drop-down {
+    border: none;
+    padding-right: 8px;
+}
+
+QComboBox::down-arrow {
+    image: url(:/images/setting_interface/checkbox_down_arrow.svg);
+    height: 6px;
+    width: 12px;
+}
