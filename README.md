@@ -7,7 +7,7 @@ A face mask detector based on STM32F103ZET6 and Yolov4.
 
 
 ## Compile and Load
-You should install `arm-none-eabi-gcc` to compire.
+You should install `arm-none-eabi-gcc` to compile this project.
 
 ```sh
 cd stm32
