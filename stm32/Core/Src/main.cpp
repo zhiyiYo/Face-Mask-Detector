@@ -58,7 +58,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern uint8_t receivedByte;
+extern bool enableBeep;
 /* USER CODE END 0 */
 
 /**
@@ -105,6 +105,7 @@ int main(void)
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, enableBeep ? GPIO_PIN_SET : GPIO_PIN_RESET);
         camera.refresh();
         /* USER CODE END 3 */
     }

@@ -44,6 +44,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 uint8_t numBufferImages = 0;
+bool enableBeep = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -268,10 +269,10 @@ void USART3_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
-    if (huart->Instance == USART3)
+    if (huart->Instance == USART1)
     {
-        printf("received: %d", receivedByte);
-        HAL_UART_Receive_IT(&huart3, &receivedByte, 1);
+        enableBeep = static_cast<bool>(receivedByte-'0');
+        HAL_UART_Receive_IT(&huart1, &receivedByte, 1);
     }
 }
 /* USER CODE END 1 */

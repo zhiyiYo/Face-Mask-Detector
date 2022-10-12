@@ -420,6 +420,15 @@ class Yolo(nn.Module):
         -------
         image: `~PIL.Image.Image`
             绘制了边界框、置信度和类别的图像
+
+        bbox: list
+            边界框
+
+        label: list
+            类别
+
+        conf: list
+            置信度
         """
         if isinstance(image, str):
             if os.path.exists(image):
@@ -440,7 +449,7 @@ class Yolo(nn.Module):
         # 预测边界框和置信度，shape: (n_classes, top_k, 5)
         y = self.predict(x)
         if not y:
-            return Image.fromarray(image)
+            return Image.fromarray(image), [], [], []
 
         # 筛选出置信度不小于阈值的预测框
         bbox = []
@@ -461,7 +470,7 @@ class Yolo(nn.Module):
             conf = None
 
         image = draw(image, np.vstack(bbox), label, conf)
-        return image
+        return image, bbox, label, conf
 
     def load(self, model_path: Union[Path, str]):
         """ 载入模型

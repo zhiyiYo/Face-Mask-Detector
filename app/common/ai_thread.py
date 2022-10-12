@@ -18,7 +18,7 @@ logger = Logger("AI_thread")
 class AIThread(QThread):
     """ 检测口罩线程 """
 
-    detectFinished = pyqtSignal(QPixmap)
+    detectFinished = pyqtSignal(QPixmap, bool)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -34,11 +34,13 @@ class AIThread(QThread):
             return
 
         # 检测图像
-        self.model.detector.conf_thresh = config.get(config.confidenceThreshold)
-        image = self.model.detect(
+        self.model.detector.conf_thresh = config.get(
+            config.confidenceThreshold)
+        image, bbox, label, conf = self.model.detect(
             self.image, VOCDataset.classes, use_gpu=config.get(config.useGPU))
 
-        self.detectFinished.emit(imageToQPixmap(image))
+        warn = any(i == VOCDataset.classes[0] for i in label)
+        self.detectFinished.emit(imageToQPixmap(image), warn)
 
     def detect(self, pixmap: QPixmap):
         """ 检测图像 """

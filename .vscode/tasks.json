@@ -1,0 +1,105 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "make -j4",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "编译生成可执行文件",
+            "options": {
+                "cwd": "${workspaceFolder}/stm32"
+            }
+        },
+        {
+            "label": "Update",
+            "type": "shell",
+            "command": "make",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "args": [
+                "update"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "Build"
+            ],
+            "detail": "构建并烧录",
+            "options": {
+                "cwd": "${workspaceFolder}/stm32"
+            }
+        },
+        {
+            "label": "Reset",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "reset"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "复位单片机",
+            "options": {
+                "cwd": "${workspaceFolder}/stm32"
+            }
+        },
+        {
+            "label": "run app",
+            "detail": "运行人脸口罩检测 APP",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "Face-Mask-Detector.py"
+            ],
+            "problemMatcher": "$gcc",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        },
+        {
+            "label": "Compile qrc",
+            "type": "shell",
+            "command": "pyrcc5",
+            "args": [
+                "-o",
+                "../common/resource.py",
+                "resource.qrc",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/app/resource"
+            },
+            "detail": "编译 qrc 文件",
+            "problemMatcher": "$gcc",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Compile qrc and run Groove",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "Face-Mask-Detector.py"
+            ],
+            "detail": "编译 qrc 并运行人脸口罩检测 APP.py",
+            "problemMatcher": "$gcc",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "Compile qrc"
+            ]
+        },
+    ]
+}

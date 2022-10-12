@@ -397,7 +397,7 @@ class ImageInterface(QWidget):
         if self.toolBarAni.state() == QPropertyAnimation.Running:
             return
 
-        self.toolBarAni.setStartValue(QPoint(self.toolBar.x(), -60))
+        self.toolBarAni.setStartValue(QPoint(self.toolBar.x(), -80))
         self.toolBarAni.setEndValue(QPoint(self.toolBar.x(), 60))
         self.toolBarAni.setDuration(300)
         self.toolBarAni.setEasingCurve(QEasingCurve.OutQuad)
@@ -409,7 +409,7 @@ class ImageInterface(QWidget):
             return
 
         self.toolBarAni.setStartValue(self.toolBar.pos())
-        self.toolBarAni.setEndValue(QPoint(self.toolBar.x(), -60))
+        self.toolBarAni.setEndValue(QPoint(self.toolBar.x(), -80))
         self.toolBarAni.setDuration(300)
         self.toolBarAni.start()
 
@@ -419,6 +419,11 @@ class ImageInterface(QWidget):
             self.__hideBar()
         else:
             self.__showBar()
+
+    def __onDetectFinished(self, image: QPixmap, warn: bool):
+        """ 检测完成槽函数 """
+        self.imageViewer.setImage(image)
+        self.serialThread.sendWarn(warn)
 
     def connectSignalToSlot(self):
         """ 信号连接到槽 """
@@ -430,7 +435,7 @@ class ImageInterface(QWidget):
         self.toolBar.zoomOutSignal.connect(self.imageViewer.zoomOut)
         self.toolBar.rotateSignal.connect(self.imageViewer.rot90)
 
-        self.aiThread.detectFinished.connect(self.imageViewer.setImage)
+        self.aiThread.detectFinished.connect(self.__onDetectFinished)
         self.serialThread.loadImageFinished.connect(self.setImage)
 
         signalBus.modelChanged.connect(self.aiThread.loadModel)

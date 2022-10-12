@@ -56,7 +56,7 @@ def image_detect(model_path: str, image_path: str, classes: List[str], image_siz
     model.eval()
 
     # 检测目标
-    return model.detect(image_path, classes, use_gpu, show_conf)
+    return model.detect(image_path, classes, use_gpu, show_conf)[0]
 
 
 def camera_detect(model_path: str, classes: List[str], image_size: int = 416, anchors: list = None,
@@ -107,7 +107,7 @@ def camera_detect(model_path: str, classes: List[str], image_size: int = 416, an
     stream = WebcamVideoStream(src=camera_src).start()
     while True:
         image = stream.read()
-        image = np.array(model.detect(image, classes, use_gpu))
+        image = np.array(model.detect(image, classes, use_gpu)[0])
         fps.update()
 
         # 显示检测结果

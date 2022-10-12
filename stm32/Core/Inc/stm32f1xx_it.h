@@ -33,6 +33,7 @@
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 extern uint8_t numBufferImages;
+extern bool enableBeep;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

@@ -2,13 +2,23 @@
 A face mask detector based on STM32F103ZET6 and Yolov4.
 
 
-## Quick start
+## Interface
+![app](./doc/screenshot.png)
+
+
+## Compile and Load
+```sh
+cd stm32
+make update
+```
+
+
+## Build Environment
 1. Create virtual environment:
 
     ```shell
-    cd algorithm
-    conda create -n yolov4 python=3.8
-    conda activate yolov4
+    conda create -n Face_Mask_Detector python=3.8
+    conda activate Face_Mask_Detector
     pip install -r requirements.txt
     ```
 
@@ -16,10 +26,9 @@ A face mask detector based on STM32F103ZET6 and Yolov4.
 
 
 ## Train
-1. Download VOC2007 dataset from [google drive](https://drive.google.com/file/d/1QspxOJMDf_rAWVV7AU_Nc0rjo1_EPEDW/view) and unzip them.
+1. Download face mask dataset from [kaggle](https://www.kaggle.com/datasets/zhiyiyo/face-mask-dataset) and unzip it.
 
 2. Download pre-trained `CSPDarknet53.pth` model from [Google Drive](https://drive.google.com/file/d/12oV8QL937S1JWFQhzLNPoqyYc_bi0lWT/view?usp=sharing).
-
 
 3. Modify the value of `root` in `train.py`, please ensure that the directory structure of the `root` folder is as follows:
 
@@ -37,8 +46,9 @@ A face mask detector based on STM32F103ZET6 and Yolov4.
 
 4. start training:
 
-    ```shell
-    conda activate yolov4
+    ```sh
+    cd algorithm
+    conda activate Face_Mask_Detector
     python train.py
     ```
 
@@ -48,7 +58,8 @@ A face mask detector based on STM32F103ZET6 and Yolov4.
 2. Calculate mAP:
 
     ```sh
-    conda activate yolov4
+    cd algorithm
+    conda activate Face_Mask_Detector
     python eval.py
     ```
 
@@ -57,9 +68,13 @@ A face mask detector based on STM32F103ZET6 and Yolov4.
 2. Calculate and plot mAP:
 
     ```shell
-    conda activate yolov4
+    cd algorithm
+    conda activate Face_Mask_Detector
     python evals.py
     ```
+
+### mAP curve
+![map curve](./algorithm/resource/image/mAP_%E6%9B%B2%E7%BA%BF.png)
 
 
 ## Detection
@@ -68,6 +83,7 @@ A face mask detector based on STM32F103ZET6 and Yolov4.
 2. Display detection results:
 
     ```shell
-    conda activate yolov4
+    cd algorithm
+    conda activate Face_Mask_Detector
     python demo.py
     ```

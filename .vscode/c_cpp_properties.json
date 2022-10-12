@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "STM32",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "__GNUC_ARM",
+                "USE_HAL_DRIVER",
+                "STM32F103xE"
+            ],
+            "windowsSdkVersion": "10.0.19041.0",
+            "compilerPath": "D:/gcc-arm/bin/arm-none-eabi-g++.exe",
+            "intelliSenseMode": "gcc-arm",
+            "cppStandard": "c++17",
+            "cStandard": "c17",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        }
+    ],
+    "version": 4
+}

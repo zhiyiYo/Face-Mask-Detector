@@ -89,6 +89,8 @@ void Error_Handler(void);
 #define FIFO_WEN_GPIO_Port GPIOB
 #define FIFO_RCLK_Pin GPIO_PIN_4
 #define FIFO_RCLK_GPIO_Port GPIOB
+#define BEEP_Pin GPIO_PIN_8
+#define BEEP_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
