@@ -24,10 +24,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdio.h"
 #include "image.h"
 #include "lcd.h"
 #include "camera.h"
-#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,7 +58,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+extern uint8_t receivedByte;
 /* USER CODE END 0 */
 
 /**
@@ -98,15 +98,14 @@ int main(void)
     /* USER CODE END 2 */
 
     /* Infinite loop */
+    //HAL_UART_Receive_IT(&huart3, &receivedByte, 1);
     /* USER CODE BEGIN WHILE */
     while (1)
     {
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
-        // camera.refresh();
-        printf("666\r\n");
-        HAL_Delay(1000);
+        camera.refresh();
         /* USER CODE END 3 */
     }
 }

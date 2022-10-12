@@ -1,10 +1,12 @@
 # coding:utf-8
-from app.common.config import config
-from app.common.signal_bus import signalBus
 from app.common.ai_thread import AIThread
+from app.common.config import config
+from app.common.serial_thread import SerialThread
+from app.common.signal_bus import signalBus
 from app.components.dialog_box import Dialog
 from app.components.widgets.label import PixmapLabel
-from PyQt5.QtCore import QFile, QRectF, QSize, Qt, pyqtSignal
+from PyQt5.QtCore import (QEasingCurve, QFile, QPoint, QPropertyAnimation,
+                          QRectF, QSize, Qt, pyqtSignal)
 from PyQt5.QtGui import QPainter, QPixmap, QTransform, QWheelEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QGraphicsItem,
                              QGraphicsPixmapItem, QGraphicsScene,
@@ -17,7 +19,6 @@ class ImageViewer(QGraphicsView):
     """ 图片查看器 """
 
     clicked = pyqtSignal()
-    showBarSignal = pyqtSignal()
     hideBarSignal = pyqtSignal()
     exitDrawModeSignal = pyqtSignal()
 
@@ -95,9 +96,18 @@ class ImageViewer(QGraphicsView):
         else:
             self.resetScale()
 
+    def mouseReleaseEvent(self, e):
+        """ 鼠标松开事件处理 """
+        super().mouseReleaseEvent(e)
+        if e.button() != Qt.LeftButton:
+            return
+
+        # 发送点击信号
+        self.clicked.emit()
+
     def setImage(self, image: QPixmap):
         """ 设置显示的图片 """
-        self.resetTransform()
+        # self.resetTransform()
 
         # 刷新图片
         self.pixmap = image
@@ -240,11 +250,17 @@ class ImageInterface(QWidget):
 
         # 线程
         self.aiThread = AIThread(self)
+        self.serialThread = SerialThread(self)
+
+        # 动画
+        self.toolBarAni = QPropertyAnimation(self.toolBar, b'pos', self)
 
         self.__initWidget()
 
     def __initWidget(self):
         """ 初始化小部件 """
+        self.toolBar.move(self.toolBar.x(), 60)
+
         self.logo.setPixmap(QPixmap(':/images/logo.png').scaled(
             376, 376, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.loadImageLabel.setPixmap(
@@ -282,7 +298,7 @@ class ImageInterface(QWidget):
         self.hintLabel.move(self.loadImageLabel.x()+50, y+9)
 
         # 调整工具栏位置
-        self.toolBar.move(w//2 - self.toolBar.width()//2, 60)
+        self.toolBar.move(w//2 - self.toolBar.width()//2, self.toolBar.y())
 
     def __saveImage(self):
         """ 保存当前图片 """
@@ -298,10 +314,12 @@ class ImageInterface(QWidget):
 
     def setImage(self, image: QPixmap):
         """ 设置图像 """
-        self.image = image
-        self.imageViewer.setImage(image)
         self.hintLabel.hide()
         self.loadImageLabel.hide()
+        self.logo.hide()
+
+        self.image = image
+        self.imageViewer.setImage(image)
         if self.isDetectEnabled:
             self.aiThread.detect(image)
 
@@ -341,14 +359,24 @@ class ImageInterface(QWidget):
             else:
                 self.aiThread.detect(self.image)
 
+    def __setPortOpened(self, isOpen):
+        """ 打开/关闭串口 """
+        if isOpen:
+            self.__showOpenPortDialog()
+        else:
+            self.serialThread.stop()
+
     def __showOpenPortDialog(self):
         """ 显示打开串口对话框 """
         title = self.tr('Are you sure to open serial port')
         selectedPort = config.get(config.serialPort)
         if selectedPort:
             content = self.tr('The currently selected serial port is') + \
-                f'"{selectedPort}"' + self.tr('. Are you sure to load images from this serial port?')
+                f'"{selectedPort}"' + \
+                self.tr('. Are you sure to load images from this serial port?')
             w = Dialog(title, content, self.window())
+            w.cancelSignal.connect(
+                lambda: self.toolBar.setOpenPortButtonSelected(False))
             w.cancelSignal.connect(signalBus.switchToSettingInterfaceSig)
             w.yesSignal.connect(self.__openPort)
         else:
@@ -362,17 +390,50 @@ class ImageInterface(QWidget):
 
     def __openPort(self):
         """ 打开串口 """
+        self.serialThread.loadImage()
+
+    def __showBar(self):
+        """ 显示工具栏和缩略图栏 """
+        if self.toolBarAni.state() == QPropertyAnimation.Running:
+            return
+
+        self.toolBarAni.setStartValue(QPoint(self.toolBar.x(), -60))
+        self.toolBarAni.setEndValue(QPoint(self.toolBar.x(), 60))
+        self.toolBarAni.setDuration(300)
+        self.toolBarAni.setEasingCurve(QEasingCurve.OutQuad)
+        self.toolBarAni.start()
+
+    def __hideBar(self):
+        """ 隐藏工具栏和缩略图栏 """
+        if self.toolBarAni.state() == QPropertyAnimation.Running:
+            return
+
+        self.toolBarAni.setStartValue(self.toolBar.pos())
+        self.toolBarAni.setEndValue(QPoint(self.toolBar.x(), -60))
+        self.toolBarAni.setDuration(300)
+        self.toolBarAni.start()
+
+    def __toggleBar(self):
+        """ 切换工具栏可见性 """
+        if self.toolBar.y() > 0:
+            self.__hideBar()
+        else:
+            self.__showBar()
 
     def connectSignalToSlot(self):
         """ 信号连接到槽 """
-        self.toolBar.openPortSignal.connect(self.__showOpenPortDialog)
+        self.toolBar.openPortSignal.connect(self.__setPortOpened)
+        self.toolBar.detectSignal.connect(self.__setDetectEnabled)
         self.toolBar.copyImageSignal.connect(self.__copyImage)
         self.toolBar.saveImageSignal.connect(self.__saveImage)
         self.toolBar.zoomInSignal.connect(self.imageViewer.zoomIn)
         self.toolBar.zoomOutSignal.connect(self.imageViewer.zoomOut)
         self.toolBar.rotateSignal.connect(self.imageViewer.rot90)
-        self.toolBar.detectSignal.connect(self.__setDetectEnabled)
 
         self.aiThread.detectFinished.connect(self.imageViewer.setImage)
+        self.serialThread.loadImageFinished.connect(self.setImage)
 
         signalBus.modelChanged.connect(self.aiThread.loadModel)
+
+        self.imageViewer.clicked.connect(self.__toggleBar)
+        self.imageViewer.hideBarSignal.connect(self.__hideBar)

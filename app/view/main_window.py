@@ -1,11 +1,10 @@
 # coding: utf-8
 from app.common import resource
-from app.common.config import config
 from app.common.signal_bus import signalBus
 from app.components.qframelesswindow import AcrylicWindow
 from app.components.title_bar import TitleBar
 from app.components.widgets.pop_up_stacked_widget import PopUpStackedWidget
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
 from .image_interface import ImageInterface
@@ -23,8 +22,6 @@ class MainWindow(AcrylicWindow):
         self.setTitleBar(TitleBar(self))
 
         self.initWidget()
-        self.imageInterface.setImage(QPixmap(
-            r"D:\C++_Study\Github_Repositories\Face_Mask_Detector\algorithm\resource\image\三上老师.jpg"))
 
     def initWidget(self):
         """ 初始化小部件 """
@@ -69,6 +66,10 @@ class MainWindow(AcrylicWindow):
         """ 切换到图像界面 """
         self.stackWidget.setCurrentWidget(self.imageInterface, True, False)
         self.titleBar.setReturnButtonVisible(False)
+
+    def closeEvent(self, e):
+        self.imageInterface.serialThread.stop()
+        super().closeEvent(e)
 
     def connectSignalToSlot(self):
         """ 信号连接到槽 """

@@ -1,15 +1,15 @@
 # coding:utf-8
 import os
 
-import numpy as np
 import torch
 from algorithm.net import Yolo
 from algorithm.net.dataset import VOCDataset
 from PIL import Image
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtGui import QPixmap
 
 from .config import config
+from .image_utils import imageToQPixmap
 from .logger import Logger
 
 logger = Logger("AI_thread")
@@ -38,13 +38,7 @@ class AIThread(QThread):
         image = self.model.detect(
             self.image, VOCDataset.classes, use_gpu=config.get(config.useGPU))
 
-        # 将图像转换为 QPixmap
-        image = np.array(image)
-        h, w, _ = image.shape
-        pixmap = QPixmap.fromImage(
-            QImage(image.data, w, h, 3 * w, QImage.Format_RGB888))
-
-        self.detectFinished.emit(pixmap)
+        self.detectFinished.emit(imageToQPixmap(image))
 
     def detect(self, pixmap: QPixmap):
         """ 检测图像 """

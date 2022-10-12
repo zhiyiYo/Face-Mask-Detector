@@ -5,6 +5,8 @@
 
 CameraTypeDef cameraTypeDef;
 extern uint8_t numBufferImages;
+extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart3;
 
 Camera::Camera(LCD* lcd) : lcd_(lcd)
 {
@@ -38,7 +40,7 @@ Camera::Camera(LCD* lcd) : lcd_(lcd)
     }
 
     //初始化 OV7725,采用 QVGA 分辨率(320*240)
-    for (auto &[reg, value] : cameraConfig)
+    for (auto& [reg, value] : cameraConfig)
         sccb_.writeRegister(reg, value);
 
     setWindow(WIDTH, HEIGHT, ImageMode::QVGA);
@@ -254,27 +256,35 @@ void Camera::refresh()
     cameraTypeDef.RRST = 1;  //复位读指针结束
     setReadClock(GPIO_PIN_SET);
 
+    // 发送帧头
+    printf("image:\n");
+
+    // 在 LCD 上显示图像并将像素发给上位机
+    uint8_t high, low;
     for (uint32_t i = 0; i < HEIGHT; ++i)
     {
+        // 一列数据
         for (uint32_t j = 0; j < WIDTH; ++j)
         {
             // 读颜色的高八位
             setReadClock(GPIO_PIN_RESET);
-            uint16_t color = GPIOC->IDR & 0XFF;
+            // high = GPIOC->IDR & 0XFF;
+            high = GPIOC->IDR & 0XFF;
             setReadClock(GPIO_PIN_SET);
-
-            color <<= 8;
 
             // 读颜色的低八位
             setReadClock(GPIO_PIN_RESET);
-            color |= GPIOC->IDR & 0XFF;
+            low = GPIOC->IDR & 0XFF;
             setReadClock(GPIO_PIN_SET);
 
-            lcd_->drawPoint(color);
-            printf("%d\n", color);
+            lcd_->drawPoint((high << 8) | low);
+
+            // 发送像素给上位机
+            HAL_UART_Transmit(&huart1, &high, 1, 100);
+            HAL_UART_Transmit(&huart1, &low, 1, 100);
         }
+        printf("\n");
     }
 
-    lcd_->setScanDirection(LCDScanDirection::L2R_U2D);
     numBufferImages = 0;  //清零帧中断标记
 }

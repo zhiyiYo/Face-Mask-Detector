@@ -201,6 +201,9 @@ class SettingInterface(ScrollArea):
         selectedPort = config.get(config.serialPort)
         if selectedPort in ports:
             self.serialComboBox.setCurrentText(selectedPort)
+        elif ports:
+            self.serialComboBox.setCurrentText(ports[0])
+            config.set(config.serialPort, ports[0])
 
         self.serialComboBox.view().setItemDelegate(
             QStyledItemDelegate(self.serialComboBox.view()))
