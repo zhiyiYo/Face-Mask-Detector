@@ -6,7 +6,7 @@ from app.components.widgets.scroll_area import ScrollArea
 from app.components.widgets.slider import Slider
 from app.components.widgets.switch_button import SwitchButton
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
-from PyQt5.QtGui import QPainter
+from PyQt5.QtGui import QPainter, QFont
 from PyQt5.QtWidgets import QLabel, QWidget, QComboBox, QStyledItemDelegate
 from torch import cuda
 
@@ -131,6 +131,10 @@ class SettingInterface(ScrollArea):
 
     def __setQss(self):
         """ 设置层叠样式 """
+        font = QFont('Segoe UI', 9)
+        font.setPixelSize(12)
+        self.serialComboBox.setFont(font)
+        
         self.settingLabel.setObjectName('settingLabel')
         self.useGPULabel.setObjectName('titleLabel')
         self.acrylicLabel.setObjectName('titleLabel')
