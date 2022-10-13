@@ -49,7 +49,6 @@ make update
 4. start training:
 
     ```sh
-    cd algorithm
     conda activate Face_Mask_Detector
     python train.py
     ```
@@ -60,7 +59,6 @@ make update
 2. Calculate mAP:
 
     ```sh
-    cd algorithm
     conda activate Face_Mask_Detector
     python eval.py
     ```
@@ -70,7 +68,6 @@ make update
 2. Calculate and plot mAP:
 
     ```shell
-    cd algorithm
     conda activate Face_Mask_Detector
     python evals.py
     ```
@@ -85,7 +82,6 @@ make update
 2. Display detection results:
 
     ```shell
-    cd algorithm
     conda activate Face_Mask_Detector
     python demo.py
     ```

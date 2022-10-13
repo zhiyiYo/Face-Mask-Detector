@@ -1,6 +1,6 @@
 # coding:utf-8
-from net import TrainPipeline, VOCDataset
-from utils.augmentation_utils import YoloAugmentation, ColorAugmentation
+from algorithm.net import TrainPipeline, VOCDataset
+from algorithm.utils.augmentation_utils import YoloAugmentation, ColorAugmentation
 
 
 # train config
@@ -20,14 +20,15 @@ config = {
     "freeze_epoch": 50,
     "max_epoch": 160,
     "start_epoch": 0,
-    "num_workers": 4
+    "num_workers": 4,
+    "save_frequency": 10
 }
 
 # load dataset
-root = 'data'
+root = './algorithm/data/FaceMaskDataset/train'
 dataset = VOCDataset(
     root,
-    'trainval',
+    'all',
     transformer=YoloAugmentation(config['image_size']),
     color_transformer=ColorAugmentation(config['image_size']),
     use_mosaic=False,

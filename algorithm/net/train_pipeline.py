@@ -210,8 +210,7 @@ class TrainPipeline:
             self.model.train()
 
             # 创建进度条
-            self.pbar = tqdm(total=self.n_batches,
-                             bar_format=bar_format, ascii=True)
+            self.pbar = tqdm(total=self.n_batches, bar_format=bar_format)
             self.pbar.set_description(
                 f"\33[36m💫 Epoch {(e+1):5d}/{self.max_epoch}")
             start_time = datetime.now()

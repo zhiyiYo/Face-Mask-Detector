@@ -5,7 +5,7 @@ from pathlib import Path
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-from net import EvalPipeline, VOCDataset
+from algorithm.net import EvalPipeline, VOCDataset
 
 mpl.rc_file('resource/theme/matlab.mplstyle')
 

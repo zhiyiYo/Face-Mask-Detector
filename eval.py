@@ -1,5 +1,5 @@
 # coding:utf-8
-from net import EvalPipeline, VOCDataset
+from algorithm.net import EvalPipeline, VOCDataset
 
 # load dataset
 root = 'data/FaceMaskDataset/val'

@@ -1,10 +1,10 @@
 # coding:utf-8
-from net import VOCDataset
-from utils.detection_utils import image_detect
+from algorithm.net import VOCDataset
+from algorithm.utils.detection_utils import image_detect
 
 # 模型文件和图片路径
 model_path = 'model/Yolo_120.pth'
-image_path = 'resource/image/三上老师.jpg'
+image_path = 'algorithm/resource/image/三上老师.jpg'
 
 # 检测目标
 anchors = [

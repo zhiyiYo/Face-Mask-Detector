@@ -72,9 +72,7 @@ class VocAnnotationReader(AnnotationReaderBase):
                 p = [int(bbox.find(pt).text) for pt in points]
                 raise ValueError(f"{file_path} 存在脏数据：object={name}, bbox={p}")
 
-            if name not in self.class_to_index.keys():
-                print(file_path)
-            #data.append(self.class_to_index[name])
+            data.append(self.class_to_index[name])
             target.append(data)
 
         return target
