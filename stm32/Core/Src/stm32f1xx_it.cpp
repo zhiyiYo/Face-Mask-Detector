@@ -272,6 +272,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
     if (huart->Instance == USART1)
     {
         enableBeep = static_cast<bool>(receivedByte-'0');
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, enableBeep ? GPIO_PIN_SET : GPIO_PIN_RESET);
         HAL_UART_Receive_IT(&huart1, &receivedByte, 1);
     }
 }
